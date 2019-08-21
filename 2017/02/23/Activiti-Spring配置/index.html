@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+    <meta name="description" content="Activiti+Spring构建工作流平台">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Activiti+Spring配置 |
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-Activiti-Spring配置" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Activiti+Spring配置
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/23/Activiti-Spring配置/" class="article-date">
+  <time datetime="2017-02-23T11:43:08.000Z" itemprop="datePublished">2017-02-23</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Activiti-Spring配置-百度图片镇楼"><a href="#Activiti-Spring配置-百度图片镇楼" class="headerlink" title="Activiti+Spring配置(百度图片镇楼)"></a>Activiti+Spring配置(百度图片镇楼)</h2><h3 id="1-依赖的包（maven构建，其他Spring依赖的包不赘述了）"><a href="#1-依赖的包（maven构建，其他Spring依赖的包不赘述了）" class="headerlink" title="1.依赖的包（maven构建，其他Spring依赖的包不赘述了）"></a>1.依赖的包（maven构建，其他Spring依赖的包不赘述了）</h3><pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-engine&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-spring&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-json-converter&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre><h3 id="2-activiti-cfg-xml配置Activiti引擎，以及实例化7大接口（上图的接口）"><a href="#2-activiti-cfg-xml配置Activiti引擎，以及实例化7大接口（上图的接口）" class="headerlink" title="2.activiti.cfg.xml配置Activiti引擎，以及实例化7大接口（上图的接口）"></a>2.activiti.cfg.xml配置Activiti引擎，以及实例化7大接口（上图的接口）</h3><pre><code>&lt;!-- jingyan --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+    &lt;bean id=&quot;objectMapper&quot; class=&quot;com.fasterxml.jackson.databind.ObjectMapper&quot;/&gt;
+    &lt;bean id=&quot;processEngineConfiguration&quot; class=&quot;org.activiti.spring.SpringProcessEngineConfiguration&quot;&gt;
+            &lt;!-- Activiti第一次启动时会初始化自己的数据库，所以需要数据源 --&gt;
+            &lt;!-- 如果自动创建表时，有索引外键之类的报错，请检查数据库驱动包的版本兼容性，我亲身经历过 --&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+        &lt;property name=&quot;transactionManager&quot; ref=&quot;transactionManager&quot;/&gt;
+        &lt;property name=&quot;databaseSchemaUpdate&quot; value=&quot;true&quot;/&gt;
+        &lt;property name=&quot;jobExecutorActivate&quot; value=&quot;false&quot;/&gt;
+        &lt;!-- 配置部署缓存 可参考 API 实现自己的缓存 --&gt;
+        &lt;property name=&quot;processDefinitionCacheLimit&quot; value=&quot;10&quot;/&gt;
+        &lt;!-- 配置历史 --&gt;
+        &lt;property name=&quot;history&quot; value=&quot;full&quot;/&gt;
+        &lt;!-- mail配置，具体再配 --&gt;
+        &lt;property name=&quot;mailServerHost&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerUsername&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerPassword&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerPort&quot; value=&quot;xxx&quot;/&gt;
+        &lt;!-- 批量发布流程 --&gt;
+        &lt;property name=&quot;deploymentResources&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;classpath*:/deployments/*&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+        &lt;!-- 自动部署发布流程模板 单例模式 --&gt;
+        &lt;property name=&quot;deploymentMode&quot; value=&quot;single-resource&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;processEngine&quot; class=&quot;org.activiti.spring.ProcessEngineFactoryBean&quot;&gt;
+        &lt;property name=&quot;processEngineConfiguration&quot; ref=&quot;processEngineConfiguration&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;!-- 7大接口 --&gt;
+    &lt;bean id=&quot;repositoryService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getRepositoryService&quot;/&gt;
+    &lt;bean id=&quot;runtimeService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getRuntimeService&quot;/&gt;
+    &lt;bean id=&quot;formService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getFormService&quot;/&gt;
+    &lt;bean id=&quot;identityService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getIdentityService&quot;/&gt;
+    &lt;bean id=&quot;taskService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getTaskService&quot;/&gt;
+    &lt;bean id=&quot;historyService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getHistoryService&quot;/&gt;
+    &lt;bean id=&quot;managementService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getManagementService&quot;/&gt;
+&lt;/beans&gt;</code></pre><p>Activiti-activiti-5.19.0 源码里面 MySql 初始化数据库的SQL如下：</p>
+<pre><code>create table ACT_GE_PROPERTY (
+    NAME_ varchar(64),
+    VALUE_ varchar(300),
+    REV_ integer,
+    primary key (NAME_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+insert into ACT_GE_PROPERTY
+values (&apos;schema.version&apos;, &apos;5.18.0.1&apos;, 1);
+
+insert into ACT_GE_PROPERTY
+values (&apos;schema.history&apos;, &apos;create(5.18.0.1)&apos;, 1);
+
+insert into ACT_GE_PROPERTY
+values (&apos;next.dbid&apos;, &apos;1&apos;, 1);
+
+create table ACT_GE_BYTEARRAY (
+    ID_ varchar(64),
+    REV_ integer,
+    NAME_ varchar(255),
+    DEPLOYMENT_ID_ varchar(64),
+    BYTES_ LONGBLOB,
+    GENERATED_ TINYINT,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_DEPLOYMENT (
+    ID_ varchar(64),
+    NAME_ varchar(255),
+    CATEGORY_ varchar(255),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    DEPLOY_TIME_ timestamp(3),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_MODEL (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    NAME_ varchar(255),
+    KEY_ varchar(255),
+    CATEGORY_ varchar(255),
+    CREATE_TIME_ timestamp(3) null,
+    LAST_UPDATE_TIME_ timestamp(3) null,
+    VERSION_ integer,
+    META_INFO_ varchar(4000),
+    DEPLOYMENT_ID_ varchar(64),
+    EDITOR_SOURCE_VALUE_ID_ varchar(64),
+    EDITOR_SOURCE_EXTRA_VALUE_ID_ varchar(64),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_EXECUTION (
+    ID_ varchar(64),
+    REV_ integer,
+    PROC_INST_ID_ varchar(64),
+    BUSINESS_KEY_ varchar(255),
+    PARENT_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    SUPER_EXEC_ varchar(64),
+    ACT_ID_ varchar(255),
+    IS_ACTIVE_ TINYINT,
+    IS_CONCURRENT_ TINYINT,
+    IS_SCOPE_ TINYINT,
+    IS_EVENT_SCOPE_ TINYINT,
+    SUSPENSION_STATE_ integer,
+    CACHED_ENT_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    NAME_ varchar(255),
+    LOCK_TIME_ timestamp(3) NULL,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_JOB (
+    ID_ varchar(64) NOT NULL,
+    REV_ integer,
+    TYPE_ varchar(255) NOT NULL,
+    LOCK_EXP_TIME_ timestamp(3) NULL,
+    LOCK_OWNER_ varchar(255),
+    EXCLUSIVE_ boolean,
+    EXECUTION_ID_ varchar(64),
+    PROCESS_INSTANCE_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    RETRIES_ integer,
+    EXCEPTION_STACK_ID_ varchar(64),
+    EXCEPTION_MSG_ varchar(4000),
+    DUEDATE_ timestamp(3) NULL,
+    REPEAT_ varchar(255),
+    HANDLER_TYPE_ varchar(255),
+    HANDLER_CFG_ varchar(4000),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_PROCDEF (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    CATEGORY_ varchar(255),
+    NAME_ varchar(255),
+    KEY_ varchar(255) not null,
+    VERSION_ integer not null,
+    DEPLOYMENT_ID_ varchar(64),
+    RESOURCE_NAME_ varchar(4000),
+    DGRM_RESOURCE_NAME_ varchar(4000),
+    DESCRIPTION_ varchar(4000),
+    HAS_START_FORM_KEY_ TINYINT,
+    HAS_GRAPHICAL_NOTATION_ TINYINT,
+    SUSPENSION_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_TASK (
+    ID_ varchar(64),
+    REV_ integer,
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    NAME_ varchar(255),
+    PARENT_TASK_ID_ varchar(64),
+    DESCRIPTION_ varchar(4000),
+    TASK_DEF_KEY_ varchar(255),
+    OWNER_ varchar(255),
+    ASSIGNEE_ varchar(255),
+    DELEGATION_ varchar(64),
+    PRIORITY_ integer,
+    CREATE_TIME_ timestamp(3),
+    DUE_DATE_ datetime(3),
+    CATEGORY_ varchar(255),
+    SUSPENSION_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    FORM_KEY_ varchar(255),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_IDENTITYLINK (
+    ID_ varchar(64),
+    REV_ integer,
+    GROUP_ID_ varchar(255),
+    TYPE_ varchar(255),
+    USER_ID_ varchar(255),
+    TASK_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),    
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_VARIABLE (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    TYPE_ varchar(255) not null,
+    NAME_ varchar(255) not null,
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    TASK_ID_ varchar(64),
+    BYTEARRAY_ID_ varchar(64),
+    DOUBLE_ double,
+    LONG_ bigint,
+    TEXT_ varchar(4000),
+    TEXT2_ varchar(4000),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_EVENT_SUBSCR (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    EVENT_TYPE_ varchar(255) not null,
+    EVENT_NAME_ varchar(255),
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    ACTIVITY_ID_ varchar(64),
+    CONFIGURATION_ varchar(255),
+    CREATED_ timestamp(3) not null DEFAULT CURRENT_TIMESTAMP(3),
+    PROC_DEF_ID_ varchar(64),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_EVT_LOG (
+    LOG_NR_ bigint auto_increment,
+    TYPE_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    EXECUTION_ID_ varchar(64),
+    TASK_ID_ varchar(64),
+    TIME_STAMP_ timestamp(3) not null,
+    USER_ID_ varchar(255),
+    DATA_ LONGBLOB,
+    LOCK_OWNER_ varchar(255),
+    LOCK_TIME_ timestamp(3) null,
+    IS_PROCESSED_ tinyint default 0,
+    primary key (LOG_NR_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_PROCDEF_INFO (
+    ID_ varchar(64) not null,
+    PROC_DEF_ID_ varchar(64) not null,
+    REV_ integer,
+    INFO_JSON_ID_ varchar(64),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create index ACT_IDX_EXEC_BUSKEY on ACT_RU_EXECUTION(BUSINESS_KEY_);
+create index ACT_IDX_TASK_CREATE on ACT_RU_TASK(CREATE_TIME_);
+create index ACT_IDX_IDENT_LNK_USER on ACT_RU_IDENTITYLINK(USER_ID_);
+create index ACT_IDX_IDENT_LNK_GROUP on ACT_RU_IDENTITYLINK(GROUP_ID_);
+create index ACT_IDX_EVENT_SUBSCR_CONFIG_ on ACT_RU_EVENT_SUBSCR(CONFIGURATION_);
+create index ACT_IDX_VARIABLE_TASK_ID on ACT_RU_VARIABLE(TASK_ID_);
+create index ACT_IDX_ATHRZ_PROCEDEF on ACT_RU_IDENTITYLINK(PROC_DEF_ID_);
+create index ACT_IDX_INFO_PROCDEF on ACT_PROCDEF_INFO(PROC_DEF_ID_);
+
+alter table ACT_GE_BYTEARRAY
+    add constraint ACT_FK_BYTEARR_DEPL 
+    foreign key (DEPLOYMENT_ID_) 
+    references ACT_RE_DEPLOYMENT (ID_);
+
+alter table ACT_RE_PROCDEF
+    add constraint ACT_UNIQ_PROCDEF
+    unique (KEY_,VERSION_, TENANT_ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PROCINST 
+    foreign key (PROC_INST_ID_) 
+    references ACT_RU_EXECUTION (ID_) on delete cascade on update cascade;
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PARENT 
+    foreign key (PARENT_ID_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_SUPER 
+    foreign key (SUPER_EXEC_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PROCDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_TSKASS_TASK 
+    foreign key (TASK_ID_) 
+    references ACT_RU_TASK (ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_ATHRZ_PROCEDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF(ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_IDL_PROCINST
+    foreign key (PROC_INST_ID_) 
+    references ACT_RU_EXECUTION (ID_);       
+
+alter table ACT_RU_TASK
+    add constraint ACT_FK_TASK_EXE
+    foreign key (EXECUTION_ID_)
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_TASK
+    add constraint ACT_FK_TASK_PROCINST
+    foreign key (PROC_INST_ID_)
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_TASK
+      add constraint ACT_FK_TASK_PROCDEF
+      foreign key (PROC_DEF_ID_)
+      references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_RU_VARIABLE 
+    add constraint ACT_FK_VAR_EXE 
+    foreign key (EXECUTION_ID_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_VARIABLE
+    add constraint ACT_FK_VAR_PROCINST
+    foreign key (PROC_INST_ID_)
+    references ACT_RU_EXECUTION(ID_);
+
+alter table ACT_RU_VARIABLE 
+    add constraint ACT_FK_VAR_BYTEARRAY 
+    foreign key (BYTEARRAY_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RU_JOB 
+    add constraint ACT_FK_JOB_EXCEPTION 
+    foreign key (EXCEPTION_STACK_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RU_EVENT_SUBSCR
+    add constraint ACT_FK_EVENT_EXEC
+    foreign key (EXECUTION_ID_)
+    references ACT_RU_EXECUTION(ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_SOURCE 
+    foreign key (EDITOR_SOURCE_VALUE_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_SOURCE_EXTRA 
+    foreign key (EDITOR_SOURCE_EXTRA_VALUE_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_DEPLOYMENT 
+    foreign key (DEPLOYMENT_ID_) 
+    references ACT_RE_DEPLOYMENT (ID_);        
+
+alter table ACT_PROCDEF_INFO 
+    add constraint ACT_FK_INFO_JSON_BA 
+    foreign key (INFO_JSON_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_PROCDEF_INFO 
+    add constraint ACT_FK_INFO_PROCDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_PROCDEF_INFO
+    add constraint ACT_UNIQ_INFO_PROCDEF
+    unique (PROC_DEF_ID_);</code></pre><h3 id="3-设计工作流模板"><a href="#3-设计工作流模板" class="headerlink" title="3.设计工作流模板"></a>3.设计工作流模板</h3><pre><code>根据具体业务自行设计（需要提前学习 BPMN2.0 规范）</code></pre><h3 id="4-调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）"><a href="#4-调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）" class="headerlink" title="4.调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）"></a>4.调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）</h3><pre><code>import net.sf.json.JSONObject;
+import org.activiti.engine.*;
+import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by jingyan on 2016/8/23.
+ * activiti 主要接口，提供：
+ * 启动任务、
+ * 查询自己代办任务、
+ * 查询运行中 和 已完成流程、
+ * 签收任务、
+ * 完成任务、
+ * 查询任务详细数据。
+ */
+@Service
+public class ActWorkFlowServiceImp implements ActWorkFlowService {
+
+    private static Logger logger = LoggerFactory.getLogger(ActWorkFlowServiceImp.class);
+
+    @Autowired
+    private ProcessEngine processEngine;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    protected TaskService taskService;
+    @Autowired
+    protected HistoryService historyService;
+    @Autowired
+    protected RepositoryService repositoryService;
+    @Autowired
+    private IdentityService identityService;
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/17  10:33
+     * Description: 手动部署工作流
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject deployWorkflow(String deploymentName, String bpmnFileName) {
+        String resPath = ConstantCode.BPMN_PATH + bpmnFileName;
+        logger.info(&quot;工作流手动部署,资源路径：&quot; + resPath);
+        Deployment deployment = processEngine.getRepositoryService().createDeployment().name(deploymentName).addClasspathResource(resPath).deploy();
+        if (!PubMethod.isEmpty(deployment)) {
+            logger.info(&quot;流程部署成功：ID=&quot; + deployment.getId() + &quot;   ,NAME=&quot; + deployment.getName());
+            return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;部署成功&quot;, deployment.getId());
+        }
+        return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;部署失败&quot;, &quot;&quot;);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  9:52
+     * Description: 启动工作流
+     * param: processDefinitionKey --- 流程文件定义KEY
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject startActWorkFlow(String businessKey, String userId, String businessType, String jsonParamStr) {
+        logger.info(&quot;启动任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + businessKey + &quot;,jsonParamStr:&quot; + jsonParamStr + &quot;]&quot;);
+        try {
+            List&lt;Task&gt; listTask = getTasksByBusKey(businessKey);
+            if (!PubMethod.isEmpty(listTask)) {
+                logger.info(&quot;业务数据：&quot; + businessKey + &quot;的任务已存在.&quot;);
+                return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;该业务已存在审批中的数据&quot;, &quot;&quot;);
+            }
+            JSONObject js = JSONObject.fromObject(jsonParamStr);
+            Map&lt;String, Object&gt; map = PubMethod.json2Map(js);
+            // 设置启动人员ID (DB： ACT_HI_PROCINST → START_USER_ID_）
+            identityService.setAuthenticatedUserId(userId);
+            String processDefKey = ProcessDefKeyEnum.valueOf(Integer.parseInt(businessType)).getProcessDefKey();
+            runtimeService.startProcessInstanceByKey(processDefKey, businessKey, map);
+            List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+            if (PubMethod.isEmpty(tasks)) {
+                return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;启动失败&quot;, &quot;&quot;);
+            }
+            List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+            ResponseVo responseVo = new ResponseVo();
+            responseVo.setUserTaskVos(list);
+            return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;启动成功&quot;, responseVo);
+        } finally {
+            identityService.setAuthenticatedUserId(null);
+        }
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 签收任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject signforTask(String businessKey, String userId) {
+        logger.info(&quot;签收任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + userId + &quot;]&quot;);
+        List&lt;Task&gt; listTask = getTasksByCandidateUser(businessKey, userId);
+        if (PubMethod.isEmpty(listTask)) {
+            logger.info(&quot;签收-未查询到：&quot; + businessKey + &quot;的任务&quot;);
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;您无权处理该笔数据&quot;, &quot;&quot;);
+        }
+        if (listTask.size() != 1) {
+            logger.info(&quot;签收-业务主键：&quot; + businessKey + &quot;的任务不唯一&quot;);
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;该笔业务异常&quot;, &quot;&quot;);
+        }
+        taskService.claim(listTask.get(0).getId(), userId);
+        List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+        if (PubMethod.isEmpty(tasks)) {
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;签收失败&quot;, &quot;&quot;);
+        }
+        List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+        ResponseVo responseVo = new ResponseVo();
+        responseVo.setUserTaskVos(list);
+        return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;签收成功&quot;, responseVo);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 提交任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject completeTask(String businessKey, String userId, String jsonParamStr) {
+        logger.info(&quot;提交任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + userId + &quot;,jsonParamStr:&quot; + jsonParamStr + &quot;]&quot;);
+        List&lt;Task&gt; listTask = getTasksByAssignee(businessKey, userId);
+        if (PubMethod.isEmpty(listTask)) {
+            logger.info(&quot;提交-未查询到：&quot; + businessKey + &quot;的任务&quot;);
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;提交的任务不存在&quot;, &quot;&quot;);
+        }
+        if (listTask.size() != 1) {
+            logger.info(&quot;提交-业务主键：&quot; + businessKey + &quot;的任务不唯一&quot;);
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;该笔业务异常&quot;, &quot;&quot;);
+        }
+        JSONObject js = JSONObject.fromObject(jsonParamStr);
+        Map&lt;String, Object&gt; map = PubMethod.json2Map(js);
+        taskService.complete(listTask.get(0).getId(), map);
+        List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+        if (PubMethod.isEmpty(tasks)) {
+            if (null == js.get(&quot;fkwc_result&quot;)) {
+                return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;提交失败&quot;, &quot;&quot;);
+            } else {
+                return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;success&quot;, &quot;&quot;);
+            }
+
+        }
+        List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+        ResponseVo responseVo = new ResponseVo();
+        responseVo.setUserTaskVos(list);
+        return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;提交成功&quot;, responseVo);
+    }
+
+        /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 挂起任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject suspendProcess(String businessKey) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+        if (null == processInstance) {
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;工作流未查询到业务数据&quot;, &quot;&quot;);
+        }
+        runtimeService.suspendProcessInstanceById(processInstance.getProcessInstanceId());
+        return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;success&quot;, null);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByBusKey(String businessKey) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+        return tasks;
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 + 候选人 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByCandidateUser(String businessKey, String userId) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskCandidateUser(userId).list();
+        return tasks;
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 + 签收人 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByAssignee(String businessKey, String userId) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskAssignee(userId).list();
+        return tasks;
+    }
+}</code></pre><h3 id="5-配置-ServiceTask-（如需要）"><a href="#5-配置-ServiceTask-（如需要）" class="headerlink" title="5.配置 ServiceTask （如需要）"></a>5.配置 ServiceTask （如需要）</h3><pre><code>&lt;serviceTask activiti:class=&quot;com.xx.activiti.servicetask.ApprovalServiceTask&quot; activiti:exclusive=&quot;true&quot; id=&quot;xx&quot; name=&quot;serviceTask&quot;/&gt;</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/23/Activiti-Spring配置/" data-id="cjzl2vhu4001lk8kbtv3xsjnv"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2018/02/01/Spring-AOP-LOG/" class="article-nav-link">
+        <strong class="article-nav-caption">Newer posts</strong>
+        <div class="article-nav-title">
+          
+            Spring AOP-LOG
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2017/02/23/Log4j常用配置/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">Log4j常用配置</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

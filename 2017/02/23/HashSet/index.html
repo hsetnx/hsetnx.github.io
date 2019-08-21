@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+    <meta name="description" content="java基础">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    HashSet |
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-HashSet" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HashSet
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/23/HashSet/" class="article-date">
+  <time datetime="2017-02-23T10:34:21.000Z" itemprop="datePublished">2017-02-23</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="HashSet-的实现"><a href="#HashSet-的实现" class="headerlink" title="HashSet 的实现"></a>HashSet 的实现</h2><p>对于 HashSet 而言，它是基于 HashMap 实现的，HashSet 底层采用 HashMap 来保存所有<br>元素，因此 HashSet 的实现比较简单，查看 HashSet 的源代码，可以看到如下代码： </p>
+<pre><code>public class HashSet&lt;E&gt;
+        extends AbstractSet&lt;E&gt;
+        implements Set&lt;E&gt;, Cloneable, java.io.Serializable {
+
+    // 使用 HashMap 的 key 保存 HashSet 中所有元素
+    private transient HashMap&lt;E, Object&gt; map;
+    // 定义一个虚拟的 Object 对象作为 HashMap 的 value 
+    private static final Object PRESENT = new Object();
+
+    // 初始化 HashSet，底层会初始化一个 HashMap 
+    public HashSet() {
+        map = new HashMap&lt;E, Object&gt;();
+    }
+
+    // 以指定的 initialCapacity、loadFactor 创建 HashSet 
+    // 其实就是以相应的参数创建 HashMap 
+    public HashSet(int initialCapacity, float loadFactor) {
+        map = new HashMap&lt;E, Object&gt;(initialCapacity, loadFactor);
+    }
+
+    public HashSet(int initialCapacity) {
+        map = new HashMap&lt;E, Object&gt;(initialCapacity);
+    }
+
+    HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+        map = new LinkedHashMap&lt;E, Object&gt;(initialCapacity
+                , loadFactor);
+    }
+
+    // 调用 map 的 keySet 来返回所有的 key 
+    public Iterator&lt;E&gt; iterator() {
+        return map.keySet().iterator();
+    }
+
+    // 调用 HashMap 的 size() 方法返回 Entry 的数量，就得到该 Set 里元素的个数
+    public int size() {
+        return map.size();
+    }
+
+    // 调用 HashMap 的 isEmpty() 判断该 HashSet 是否为空，
+    // 当 HashMap 为空时，对应的 HashSet 也为空
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    // 调用 HashMap 的 containsKey 判断是否包含指定 key 
+    //HashSet 的所有元素就是通过 HashMap 的 key 来保存的
+    public boolean contains(Object o) {
+        return map.containsKey(o);
+    }
+
+    // 将指定元素放入 HashSet 中，也就是将该元素作为 key 放入 HashMap 
+    public boolean add(E e) {
+        return map.put(e, PRESENT) == null;
+    }
+
+    // 调用 HashMap 的 remove 方法删除指定 Entry，也就删除了 HashSet 中对应的元素
+    public boolean remove(Object o) {
+        return map.remove(o) == PRESENT;
+    }
+
+    // 调用 Map 的 clear 方法清空所有 Entry，也就清空了 HashSet 中所有元素
+    public void clear() {
+        map.clear();
+    }
+} </code></pre><p>由上面源程序可以看出，HashSet 的实现其实非常简单，它只是封装了一个 HashMap 对象来存储<br>所有的集合元素，所有放入HashSet中的集合元素实际上由HashMap的key来保存，而HashMap<br>的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。</p>
+<p>HashSet 的绝大部分方法都是通过调用 HashMap 的方法来实现的，因此 HashSet 和 HashMap 两个集合在实现本质上是相同的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/23/HashSet/" data-id="cjzl2vhse0001k8kb71bd7nqb"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2017/02/23/Log4j常用配置/" class="article-nav-link">
+        <strong class="article-nav-caption">Newer posts</strong>
+        <div class="article-nav-title">
+          
+            Log4j常用配置
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2017/02/21/Spring事务隔离级别/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">Spring事务隔离级别</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

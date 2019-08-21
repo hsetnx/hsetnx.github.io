@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+    <meta name="description" content="Hexo换电脑后如何继续维护博客">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Hexo换电脑后如何继续维护博客 |
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-Hexo换电脑后如何继续维护博客" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hexo换电脑后如何继续维护博客
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/05/Hexo换电脑后如何继续维护博客/" class="article-date">
+  <time datetime="2018-02-05T04:21:29.000Z" itemprop="datePublished">2018-02-05</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/nodejs/">nodejs</a>
+  </div>
+
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="更换PC后如何继续维护GitHub的博客"><a href="#更换PC后如何继续维护GitHub的博客" class="headerlink" title="更换PC后如何继续维护GitHub的博客"></a>更换PC后如何继续维护GitHub的博客</h2><p>直入主题，好多人都在github搭建了自己的静态博客，那么有个问题，再我们更换PC后，如何继续维护博客呢？下面就是一些建议。</p>
+<p>个人博客也算是一个项目，作为一个程序员应该明白，一个能运行的项目，从大的方面理论上就分两部分：源码、编译生成的可运行文件。通常我们需要维护的就是源码，上线的是编译好的文件，博客的维护是一个道理。</p>
+<p>在搭建完博客，安装完主题后，第一件事就是把这套源码维护起来，当然最方便的就是github了。记得在github创建一个和你用户名一样的仓库，把代码同步上去，这就为完成了第一步。第二步，编译部署。这个大家很熟悉，没什么说的，按照标准的hexo命令来就行。那么当你换了电脑，怎么处理呢，有人会疑问，我重新安装hexo，那我之前的基于主题的配置被覆盖了怎么办？其实没那么麻烦，下面就是更换PC后的操作：</p>
+<pre><code>0： 克隆源码、安装nodejs(准备环境)
+1： npm install -g hexo-cli (安装hexo,切记只需安装，不需要初始化init)
+2： npm install hexo-server --save （安装本地测试的server,新版需要单独安装）
+3： hexo clean （编译两部曲）
+4： hexo generate
+5:  hexo server （本地测试）
+6:  hexo deploy （部署）</code></pre><p>是不是发现没你想象那么麻烦，觉得实用就转发吧…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/05/Hexo换电脑后如何继续维护博客/" data-id="cjzl2vhsi0004k8kb0uvtc352"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2018/02/05/一致性哈希/" class="article-nav-link">
+        <strong class="article-nav-caption">Newer posts</strong>
+        <div class="article-nav-title">
+          
+            一致性哈希
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2018/02/05/SpringBoot多环境yml配置/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">SpringBoot多环境yml配置</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

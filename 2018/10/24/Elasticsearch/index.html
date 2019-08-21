@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+    <meta name="description" content="Elasticsearch 倒排索引">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Elasticsearch |
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-Elasticsearch" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Elasticsearch
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/10/24/Elasticsearch/" class="article-date">
+  <time datetime="2018-10-24T02:13:36.000Z" itemprop="datePublished">2018-10-24</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/缓存/">缓存</a> / <a class="article-category-link" href="/categories/缓存/Elasticsearch/">Elasticsearch</a>
+  </div>
+
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h1 id="Elasticsearch倒排索引"><a href="#Elasticsearch倒排索引" class="headerlink" title="Elasticsearch倒排索引"></a>Elasticsearch倒排索引</h1><h2 id="倒排索引的设计思路"><a href="#倒排索引的设计思路" class="headerlink" title="倒排索引的设计思路"></a>倒排索引的设计思路</h2><p>发布清单（值和文档ID的映射）→ 术语（前缀）字典 → 字典再建索引 （B-Tree）→ 索引再通过有限状态机压缩存储 →  状态机的路径编号再进行增量压缩 →  搜索速度和内存的同步优化</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/inverted-index.png" alt="Alt text"></p>
+<p>假设有这么几条数据:<br>ID是Elasticsearch自建的文档id，那么Elasticsearch建立的索引如下:<br>Name:<br>Age:<br>Sex:</p>
+<h3 id="Posting-List"><a href="#Posting-List" class="headerlink" title="Posting List"></a>Posting List</h3><p>Elasticsearch分别为每个field都建立了一个倒排索引，Kate, John, 24, Female这些叫term，而[1,2]就是Posting List。Posting list就是一个int的数组，存储了所有符合某个term的文档id。<br>看到这里，不要认为就结束了，精彩的部分才刚开始…<br>通过posting list这种索引方式似乎可以很快进行查找，比如要找age=24的同学，爱回答问题的小明马上就举手回答：我知道，id是1，2的同学。但是，如果这里有上千万的记录呢？如果是想通过name来查找呢？</p>
+<h3 id="Term-Dictionary"><a href="#Term-Dictionary" class="headerlink" title="Term Dictionary"></a>Term Dictionary</h3><p>Elasticsearch为了能快速找到某个term，将所有的term排个序，二分法查找term，logN的查找效率，就像通过字典查找一样，这就是Term Dictionary。现在再看起来，似乎和传统数据库通过B-Tree的方式类似啊，为什么说比B-Tree的查询快呢？</p>
+<h3 id="Term-Index"><a href="#Term-Index" class="headerlink" title="Term Index"></a>Term Index</h3><p>B-Tree通过减少磁盘寻道次数来提高查询性能，Elasticsearch也是采用同样的思路，直接通过内存查找term，不读磁盘，但是如果term太多，term dictionary也会很大，放内存不现实，于是有了Term Index，就像字典里的索引页一样，A开头的有哪些term，分别在哪页，可以理解term index是一颗树：</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/term-index.png" alt="Alt text"></p>
+<p>这棵树不会包含所有的term，它包含的是term的一些前缀。通过term index可以快速地定位到term dictionary的某个offset，然后从这个位置再往后顺序查找。</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/index.png" alt="Alt text"></p>
+<p>但是索引本身也能很大，会产生2个问题：<br>1）.索引本身查找较慢<br>2）.索引本身很吃内存</p>
+<p>这时需要建立 索引字典，能快速查找索引本身，同时，还要压缩索引本身大小。<br>    1.利用 有限状态机 拆解单词，然后按权重记录前缀的编号<br>    2.在对编号本身做增量压缩<br>这样，通过B树建立索引字典提高了索引本身的检索速度；<br>同时，通过分词，分字母，然后通过 有限状态机 压缩索引 前缀，在把状态机的序号进行增量压缩，大大减少了索引字典对内存的消耗。</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/fst.png" alt="Alt text"></p>
+<p>Elasticsearch要求posting list是有序的，这样做的一个好处是方便压缩，看下面这个图例： </p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/frameOfReference.png" alt="Alt text"></p>
+<p>增量压缩就是上面的方式：</p>
+<p>73+227=300 </p>
+<p>73+227+2=302</p>
+<p>依此类推；</p>
+<p>这样的结果就是：基于完备的索引，搜索查询很快；索引又做了存储的优化，内存不会严重消耗，双赢。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/10/24/Elasticsearch/" data-id="cjzl2vhs90000k8kbl0qe73ci"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Elasticsearch/">Elasticsearch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存/">缓存</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2019/08/21/page/" class="article-nav-link">
+        <strong class="article-nav-caption">Newer posts</strong>
+        <div class="article-nav-title">
+          
+            page
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2018/10/23/Json反射Bean/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">Json反射Bean</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

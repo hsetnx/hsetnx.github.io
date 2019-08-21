@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="jumbotron">
+  <div class="video">
+    
+      <div class="video-frame">
+        <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
+      </div>
+    
+    <div class="video-media">
+      <video playsinline="" autoplay="" loop="" muted="" data-autoplay=""
+             poster="/images/ocean/ocean.png" x5-video-player-type="h5">
+        <source src="/images/ocean/ocean.mp4" type="video/mp4">
+        <source src="/images/ocean/ocean.ogv" type="video/ogg">
+        <source src="/images/ocean/ocean.webm" type="video/webm">
+        <p>Your user agent does not support the HTML5 Video element.</p>
+      </video>
+      <div class="video-overlay"></div>
+    </div>
+    <div class="video-inner text-center text-white">
+      <h1><a href="/">悲欢自饮_</a></h1>
+      <p>明日安在,无人能允。</p>
+      <div><img src="/images/default_avatar.png" class="brand" alt="悲欢自饮_"></div>
+    </div>
+    <div class="video-learn-more">
+      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
+    </div>
+  </div>
+</section>
+
+<div id="landingpage">
+  <section class="outer">
+  <article class="articles">
+    
+    <h1 class="page-type-title"></h1>
+
+    
+      
+        
+
+<article id="post-page" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/08/21/page/">page</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/08/21/page/" class="article-date">
+  <time datetime="2019-08-21T09:04:16.000Z" itemprop="datePublished">2019-08-21</time>
+</a>
+        
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2019/08/21/page/" data-id="cjzl2vhss000fk8kboqhzwc6h"
+         class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Elasticsearch" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/10/24/Elasticsearch/">Elasticsearch</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/10/24/Elasticsearch/" class="article-date">
+  <time datetime="2018-10-24T02:13:36.000Z" itemprop="datePublished">2018-10-24</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/缓存/">缓存</a> / <a class="article-category-link" href="/categories/缓存/Elasticsearch/">Elasticsearch</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h1 id="Elasticsearch倒排索引"><a href="#Elasticsearch倒排索引" class="headerlink" title="Elasticsearch倒排索引"></a>Elasticsearch倒排索引</h1><h2 id="倒排索引的设计思路"><a href="#倒排索引的设计思路" class="headerlink" title="倒排索引的设计思路"></a>倒排索引的设计思路</h2><p>发布清单（值和文档ID的映射）→ 术语（前缀）字典 → 字典再建索引 （B-Tree）→ 索引再通过有限状态机压缩存储 →  状态机的路径编号再进行增量压缩 →  搜索速度和内存的同步优化</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/inverted-index.png" alt="Alt text"></p>
+<p>假设有这么几条数据:<br>ID是Elasticsearch自建的文档id，那么Elasticsearch建立的索引如下:<br>Name:<br>Age:<br>Sex:</p>
+<h3 id="Posting-List"><a href="#Posting-List" class="headerlink" title="Posting List"></a>Posting List</h3><p>Elasticsearch分别为每个field都建立了一个倒排索引，Kate, John, 24, Female这些叫term，而[1,2]就是Posting List。Posting list就是一个int的数组，存储了所有符合某个term的文档id。<br>看到这里，不要认为就结束了，精彩的部分才刚开始…<br>通过posting list这种索引方式似乎可以很快进行查找，比如要找age=24的同学，爱回答问题的小明马上就举手回答：我知道，id是1，2的同学。但是，如果这里有上千万的记录呢？如果是想通过name来查找呢？</p>
+<h3 id="Term-Dictionary"><a href="#Term-Dictionary" class="headerlink" title="Term Dictionary"></a>Term Dictionary</h3><p>Elasticsearch为了能快速找到某个term，将所有的term排个序，二分法查找term，logN的查找效率，就像通过字典查找一样，这就是Term Dictionary。现在再看起来，似乎和传统数据库通过B-Tree的方式类似啊，为什么说比B-Tree的查询快呢？</p>
+<h3 id="Term-Index"><a href="#Term-Index" class="headerlink" title="Term Index"></a>Term Index</h3><p>B-Tree通过减少磁盘寻道次数来提高查询性能，Elasticsearch也是采用同样的思路，直接通过内存查找term，不读磁盘，但是如果term太多，term dictionary也会很大，放内存不现实，于是有了Term Index，就像字典里的索引页一样，A开头的有哪些term，分别在哪页，可以理解term index是一颗树：</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/term-index.png" alt="Alt text"></p>
+<p>这棵树不会包含所有的term，它包含的是term的一些前缀。通过term index可以快速地定位到term dictionary的某个offset，然后从这个位置再往后顺序查找。</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/index.png" alt="Alt text"></p>
+<p>但是索引本身也能很大，会产生2个问题：<br>1）.索引本身查找较慢<br>2）.索引本身很吃内存</p>
+<p>这时需要建立 索引字典，能快速查找索引本身，同时，还要压缩索引本身大小。<br>    1.利用 有限状态机 拆解单词，然后按权重记录前缀的编号<br>    2.在对编号本身做增量压缩<br>这样，通过B树建立索引字典提高了索引本身的检索速度；<br>同时，通过分词，分字母，然后通过 有限状态机 压缩索引 前缀，在把状态机的序号进行增量压缩，大大减少了索引字典对内存的消耗。</p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/fst.png" alt="Alt text"></p>
+<p>Elasticsearch要求posting list是有序的，这样做的一个好处是方便压缩，看下面这个图例： </p>
+<p><img src="https://raw.githubusercontent.com/Neway6655/neway6655.github.com/master/images/elasticsearch-study/frameOfReference.png" alt="Alt text"></p>
+<p>增量压缩就是上面的方式：</p>
+<p>73+227=300 </p>
+<p>73+227+2=302</p>
+<p>依此类推；</p>
+<p>这样的结果就是：基于完备的索引，搜索查询很快；索引又做了存储的优化，内存不会严重消耗，双赢。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/10/24/Elasticsearch/" data-id="cjzl2vhs90000k8kbl0qe73ci"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Elasticsearch/">Elasticsearch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存/">缓存</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Json反射Bean" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/10/23/Json反射Bean/">Json反射Bean</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/10/23/Json反射Bean/" class="article-date">
+  <time datetime="2018-10-23T05:33:20.000Z" itemprop="datePublished">2018-10-23</time>
+</a>
+        
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h1 id="Json反射Bean"><a href="#Json反射Bean" class="headerlink" title="Json反射Bean"></a>Json反射Bean</h1><h2 id="新加注解，标记别名。"><a href="#新加注解，标记别名。" class="headerlink" title="新加注解，标记别名。"></a>新加注解，标记别名。</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created with Jingyan</span><br><span class="line"> * Time: 2018-10-19 18:33</span><br><span class="line"> * Description: FIELD 别名注解</span><br><span class="line"> */ </span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">public @interface Alias &#123;</span><br><span class="line"></span><br><span class="line">    String name() default &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="增加工具类，通过反射找到匹配的field，并调用set方法"><a href="#增加工具类，通过反射找到匹配的field，并调用set方法" class="headerlink" title="增加工具类，通过反射找到匹配的field，并调用set方法"></a>增加工具类，通过反射找到匹配的field，并调用set方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Author: Jingyan</span><br><span class="line"> * @Time: 2018-10-19 17:15</span><br><span class="line"> * @Description: class 的属性名 和 json的key值 不对应的转换，需要做映射，基于Alias注解</span><br><span class="line"> */</span><br><span class="line">public class JsonToBeanUtil &#123;</span><br><span class="line"></span><br><span class="line">    private static final Logger logger = LoggerFactory.getLogger(JsonToBeanUtil.class);</span><br><span class="line">    private static final String GET = &quot;get&quot;;</span><br><span class="line">    private static final String SET = &quot;set&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:29</span><br><span class="line">     * Description: LIST JSON 转 LIST Bean 基于 Alias 注解</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; List&lt;T&gt; jsonToBean(List&lt;JSONObject&gt; jsonList, Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        List&lt;T&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line">        try &#123;</span><br><span class="line">            Map&lt;String, String&gt; aliasMap = getAliasMapping(clazz);</span><br><span class="line">            for (JSONObject jsonObject : jsonList) &#123;</span><br><span class="line">                Object object = clazz.newInstance();</span><br><span class="line">                Set&lt;String&gt; keySet = jsonObject.keySet();</span><br><span class="line">                for (String key : keySet) &#123;</span><br><span class="line">                    String fieldName = aliasMap.get(key);</span><br><span class="line">                    setValue(object, clazz, fieldName, clazz.getDeclaredField(fieldName).getType(), jsonObject.get(key));</span><br><span class="line">                &#125;</span><br><span class="line">                list.add((T) object);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            logger.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">        return list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:49</span><br><span class="line">     * Description: 单个JSON 转 Bean</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T jsonToBean(JSONObject jsonObject, Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        Object object = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            Map&lt;String, String&gt; aliasMap = getAliasMapping(clazz);</span><br><span class="line">            object = clazz.newInstance();</span><br><span class="line">            Set&lt;String&gt; keySet = jsonObject.keySet();</span><br><span class="line">            for (String key : keySet) &#123;</span><br><span class="line">                String fieldName = aliasMap.get(key);</span><br><span class="line">                if (null == fieldName || &quot;&quot;.equals(fieldName)) &#123;</span><br><span class="line">                    throw new RuntimeException(&quot;json key [&quot; + key + &quot;]未匹配到bean的field...&quot;);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    setValue(object, clazz, fieldName, clazz.getDeclaredField(fieldName).getType(), jsonObject.get(key));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            logger.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">        return (T) object;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:49</span><br><span class="line">     * Description: 单个 map 转 Bean</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T mapToBean(Map&lt;String, Object&gt; map, Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        Object object = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            Map&lt;String, String&gt; aliasMap = getAliasMapping(clazz);</span><br><span class="line">            object = clazz.newInstance();</span><br><span class="line">            Set&lt;String&gt; keySet = map.keySet();</span><br><span class="line">            for (String key : keySet) &#123;</span><br><span class="line">                String fieldName = aliasMap.get(key);</span><br><span class="line">                if (null == fieldName || &quot;&quot;.equals(fieldName)) &#123;</span><br><span class="line">                    throw new RuntimeException(&quot;map key [&quot; + key + &quot;]未匹配到bean的field...&quot;);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    setValue(object, clazz, fieldName, clazz.getDeclaredField(fieldName).getType(), map.get(key));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            logger.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">        return (T) object;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-22 13:44</span><br><span class="line">     * Description: 获取 alias-name 和 filed-name的映射</span><br><span class="line">     */</span><br><span class="line">    private static &lt;T&gt; Map&lt;String, String&gt; getAliasMapping(Class&lt;T&gt; clazz) &#123;</span><br><span class="line">        Field[] fields = clazz.getDeclaredFields();</span><br><span class="line">        Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            Alias alias = field.getAnnotation(Alias.class);</span><br><span class="line">            if (null == alias) &#123;</span><br><span class="line">                map.put(field.getName(), field.getName());</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                map.put(alias.name(), field.getName());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return map;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:25</span><br><span class="line">     * Description: 调用set方法</span><br><span class="line">     *</span><br><span class="line">     * @Param: &#123;</span><br><span class="line">     * --- obj: Java对象实例;</span><br><span class="line">     * --- clazz:obj.class;</span><br><span class="line">     * --- filedName:set方法对应的属性名;</span><br><span class="line">     * --- typeClass: 属性的类型;</span><br><span class="line">     * --- value:属性要set的值</span><br><span class="line">     * &#125;</span><br><span class="line">     */</span><br><span class="line">    public static void setValue(Object obj, Class&lt;?&gt; clazz, String filedName, Class&lt;?&gt; typeClass, Object value) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            String methodName = getSetMethodName(filedName, SET);</span><br><span class="line">            if (null == methodName) &#123;</span><br><span class="line">                logger.error(&quot;属性[&#123;&#125;]set异常&quot;, filedName);</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            Method method = clazz.getDeclaredMethod(methodName, new Class[]&#123;typeClass&#125;);</span><br><span class="line">            method.invoke(obj, new Object[]&#123;getClassTypeValue(typeClass, value)&#125;);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            logger.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:26</span><br><span class="line">     * Description: 格式化名字，获取set方法名</span><br><span class="line">     */</span><br><span class="line">    public static String getSetMethodName(String filedName, String getSet) &#123;</span><br><span class="line">        if (null == filedName || &quot;&quot;.equals(filedName)) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        String methodName = SET + filedName.substring(0, 1).toUpperCase() + filedName.substring(1);</span><br><span class="line">        return methodName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Created with Jingyan</span><br><span class="line">     * Time: 2018-10-19 18:26</span><br><span class="line">     * Description: 设置默认值</span><br><span class="line">     */</span><br><span class="line">    private static Object getClassTypeValue(Class&lt;?&gt; typeClass, Object value) &#123;</span><br><span class="line">        if (typeClass == int.class || typeClass == Integer.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return 0;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == short.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return 0;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == byte.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return 0;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == double.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return 0;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == long.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return 0;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == String.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return &quot;&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">            return String.valueOf(value);</span><br><span class="line">        &#125; else if (typeClass == boolean.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            return value;</span><br><span class="line">        &#125; else if (typeClass == BigDecimal.class) &#123;</span><br><span class="line">            if (null == value) &#123;</span><br><span class="line">                return new BigDecimal(0);</span><br><span class="line">            &#125;</span><br><span class="line">            return new BigDecimal(value + &quot;&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return typeClass.cast(value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Alias(name = &quot;OrderID&quot;)</span><br><span class="line">private String orderId;</span><br><span class="line">@Alias(name = &quot;UserID&quot;)</span><br><span class="line">private String userId;</span><br><span class="line">@Alias(name = &quot;cityCode&quot;)</span><br><span class="line">private String cityCode;</span><br><span class="line">@Alias(name = &quot;State&quot;)</span><br><span class="line">private String state;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;T&gt; List&lt;T&gt; parseResponse(SearchResponse response, Class&lt;T&gt; clazz)throws Exception &#123;</span><br><span class="line">    List&lt;T&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line">    if (null != response.getHits() &amp;&amp; response.getHits().getHits().length &gt; 0) &#123;</span><br><span class="line">      for (SearchHit searchHit : response.getHits()) &#123;</span><br><span class="line">        Map&lt;String, Object&gt; hit = searchHit.getSourceAsMap();</span><br><span class="line">        //map 转 对象</span><br><span class="line">        T t = JsonToBeanUtil.mapToBean(hit,clazz);</span><br><span class="line">        list.add(t);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return list;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/10/23/Json反射Bean/" data-id="cjzl2vhtq001fk8kbadgllo64"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-一致性哈希" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/02/05/一致性哈希/">一致性哈希</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/05/一致性哈希/" class="article-date">
+  <time datetime="2018-02-05T06:08:25.000Z" itemprop="datePublished">2018-02-05</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="一致性哈希-Java"><a href="#一致性哈希-Java" class="headerlink" title="一致性哈希-Java"></a>一致性哈希-Java</h2><p>一致性哈希是什么、能干什么这个自己可以上网查查，本文讲述Java的实现，具体用过mycat等分库插件的，就知道这个算法还是很实用的。</p>
+<p>代码：</p>
+<pre><code>/**
+ * @Author: jingyan
+ * @Time: 2017/4/18 17:56
+ * @Describe:一致性哈希
+ */
+public class ConsistencyHash {
+
+    private List&lt;ServerNodeInfo&gt; physicalServerNodeInfos;           // 物理节点
+    private TreeMap&lt;Long, ServerNodeInfo&gt; virtualNodes;   // 虚拟节点
+    private final int NODE_NUM = 64; // 每个机器节点关联的虚拟节点个数
+
+    /**
+     * @Author: jingyan
+     * @Time: 2017/4/18 18:20
+     * @Describe:构造方法
+     */
+    public ConsistencyHash(List&lt;ServerNodeInfo&gt; physicalServerNodeInfos) {
+        super();
+        this.physicalServerNodeInfos = physicalServerNodeInfos;
+        this.init();
+    }
+
+    /**
+     * @Author: jingyan
+     * @Time: 2017/4/18 18:17
+     * @Describe:初始化环，物理节点插入虚拟节点
+     */
+    public void init() {
+        virtualNodes = new TreeMap&lt;Long, ServerNodeInfo&gt;();
+        if (null == physicalServerNodeInfos || physicalServerNodeInfos.size() == 0) {
+
+        }
+        //遍历物理节点
+        for (ServerNodeInfo serverNodeInfo : physicalServerNodeInfos) {
+            //嵌入虚拟节点
+            for (int n = 0; n &lt; NODE_NUM; n++) {
+                Long hx = this.hash(serverNodeInfo.getIp() + &quot;#&quot; + n);
+                virtualNodes.put(hx, serverNodeInfo);
+            }
+        }
+    }
+
+    /**
+     * @Author: jingyan
+     * @Time: 2017/4/18 18:16
+     * @Describe:获取顺时针距离最近的node节点
+     */
+    public ServerNodeInfo getNodeInfo(String key) {
+        //截取虚拟node的hash值--【大于】--key的hash值的map
+        SortedMap&lt;Long, ServerNodeInfo&gt; tail = virtualNodes.tailMap(hash(key));
+        //截取结果不为0,第一个就是需要的节点信息
+        if (tail.size() != 0) {
+            return tail.get(tail.firstKey());
+        }
+        // 截取结果为空
+        // 即环上虚拟节点的最大hash小于参数key的hash
+        // 此种情况按照规则，直接取第一个节点(环状)
+        return virtualNodes.get(virtualNodes.firstKey());
+    }
+
+    /**
+     * MurMurHash算法，是非加密HASH算法，性能很高，
+     * 比传统的CRC32,MD5，SHA-1（这两个算法都是加密HASH算法，复杂度本身就很高，带来的性能上的损害也不可避免）
+     * 等HASH算法要快很多，而且据说这个算法的碰撞率很低.
+     * http://murmurhash.googlepages.com/
+     */
+    private Long hash(String key) {
+        ByteBuffer buf = ByteBuffer.wrap(key.getBytes());
+        int seed = 0x1234ABCD;
+        ByteOrder byteOrder = buf.order();
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        long m = 0xc6a4a7935bd1e995L;
+        int r = 47;
+        long h = seed ^ (buf.remaining() * m);
+        long k;
+        while (buf.remaining() &gt;= 8) {
+            k = buf.getLong();
+            k *= m;
+            k ^= k &gt;&gt;&gt; r;
+            k *= m;
+            h ^= k;
+            h *= m;
+        }
+        if (buf.remaining() &gt; 0) {
+            ByteBuffer finish = ByteBuffer.allocate(8).order(
+                    ByteOrder.LITTLE_ENDIAN);
+            finish.put(buf).rewind();
+            h ^= finish.getLong();
+            h *= m;
+        }
+        h ^= h &gt;&gt;&gt; r;
+        h *= m;
+        h ^= h &gt;&gt;&gt; r;
+        buf.order(byteOrder);
+        return h;
+    }
+
+
+    public static void main(String[] args) {
+        List&lt;ServerNodeInfo&gt; serverNodeInfos = new ArrayList&lt;&gt;();
+        for (int i = 1; i &lt; 6; i++) {
+            ServerNodeInfo n = new ServerNodeInfo(&quot;server&quot; + i, &quot;127.0.0.&quot; + i);
+            serverNodeInfos.add(n);
+        }
+        ConsistencyHash consistencyHash = new ConsistencyHash(serverNodeInfos);
+        consistencyHash.getNodeInfo(&quot;aaa&quot;);
+    }
+}
+
+/**
+ * @Author: jingyan
+ * @Time: 2017/4/19 17:05
+ * @Describe:服务器信息实体类
+ */
+class ServerNodeInfo {
+
+    private String name;
+    private String ip;
+
+    public ServerNodeInfo(String name, String ip) {
+        this.name = name;
+        this.ip = ip;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;ServerNodeInfo{&quot; +
+                &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +
+                &quot;, ip=&apos;&quot; + ip + &apos;\&apos;&apos; +
+                &apos;}&apos;;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+}</code></pre><p>很明显，我们是通过给物理节点虚拟出64个节点构建的，即在这个环上，每个物理节点都对应着64个虚拟节点，这样就降低了某一段的命中率太高，圆上分布不均的弊端。使用TreeMap，方便了排序获取下个节点。其余的可以看代码注释。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/05/一致性哈希/" data-id="cjzl2vhsw000kk8kb0uxyy9lg"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Hexo换电脑后如何继续维护博客" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/02/05/Hexo换电脑后如何继续维护博客/">Hexo换电脑后如何继续维护博客</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/05/Hexo换电脑后如何继续维护博客/" class="article-date">
+  <time datetime="2018-02-05T04:21:29.000Z" itemprop="datePublished">2018-02-05</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/nodejs/">nodejs</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="更换PC后如何继续维护GitHub的博客"><a href="#更换PC后如何继续维护GitHub的博客" class="headerlink" title="更换PC后如何继续维护GitHub的博客"></a>更换PC后如何继续维护GitHub的博客</h2><p>直入主题，好多人都在github搭建了自己的静态博客，那么有个问题，再我们更换PC后，如何继续维护博客呢？下面就是一些建议。</p>
+<p>个人博客也算是一个项目，作为一个程序员应该明白，一个能运行的项目，从大的方面理论上就分两部分：源码、编译生成的可运行文件。通常我们需要维护的就是源码，上线的是编译好的文件，博客的维护是一个道理。</p>
+<p>在搭建完博客，安装完主题后，第一件事就是把这套源码维护起来，当然最方便的就是github了。记得在github创建一个和你用户名一样的仓库，把代码同步上去，这就为完成了第一步。第二步，编译部署。这个大家很熟悉，没什么说的，按照标准的hexo命令来就行。那么当你换了电脑，怎么处理呢，有人会疑问，我重新安装hexo，那我之前的基于主题的配置被覆盖了怎么办？其实没那么麻烦，下面就是更换PC后的操作：</p>
+<pre><code>0： 克隆源码、安装nodejs(准备环境)
+1： npm install -g hexo-cli (安装hexo,切记只需安装，不需要初始化init)
+2： npm install hexo-server --save （安装本地测试的server,新版需要单独安装）
+3： hexo clean （编译两部曲）
+4： hexo generate
+5:  hexo server （本地测试）
+6:  hexo deploy （部署）</code></pre><p>是不是发现没你想象那么麻烦，觉得实用就转发吧…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/05/Hexo换电脑后如何继续维护博客/" data-id="cjzl2vhsi0004k8kb0uvtc352"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-SpringBoot多环境yml配置" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/02/05/SpringBoot多环境yml配置/">SpringBoot多环境yml配置</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/05/SpringBoot多环境yml配置/" class="article-date">
+  <time datetime="2018-02-05T03:48:29.000Z" itemprop="datePublished">2018-02-05</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="SpringBoot多环境yml配置"><a href="#SpringBoot多环境yml配置" class="headerlink" title="SpringBoot多环境yml配置"></a>SpringBoot多环境yml配置</h2><p>通常情况下，我们的Spring boot项目都会涉及多个环境的部署，例如最基本的开发、测试、预生产、生产。这种情况下，我们依赖的一些外部组件的配置往往是不同的，例如DB、接口、ZK等，这样就需要我们根据不同环境选择不同的配置文件。在springboot之前，我们通常都是通过pom配置多个profile，然后打包时动态替换配置文件的参数，但是，在有了spring boot之后，还有一种更方便办法，就是在项目启动时，根据环境动态选择不同的配置文件。</p>
+<p>给个例子：</p>
+<pre><code>spring:
+  profiles:
+    active: test
+# spring environment --- 分区
+# java -jar distributed-idempotent.jar --spring.profiles.active=dev
+# java -jar distributed-idempotent.jar --spring.profiles.active=test
+---
+spring:
+  profiles: dev
+  redis:
+    host: 0.0.0.0
+    port: 6379
+    password: ****
+    pool:
+      max-active: 8
+      max-wait: 1
+      max-idle: 8
+      min-idle: 0
+logging:
+  path: /usr/local/logs/distributed-idempotent/
+  level:
+    root: INFO
+---
+spring:
+  profiles: test
+  redis:
+    host: 0.0.0.0
+    port: 6379
+    password: ****
+    pool:
+      max-active: 8
+      max-wait: 1
+      max-idle: 8
+      min-idle: 0
+logging:
+  path: /usr/local/logs/distributed-idempotent/
+  level:
+    root: DEBUG</code></pre><p>在yml文件中三个短横线（—）代表分区，这样，我们就可以将一个yml文件根据部署环境的数量，分成若干个区，然后在每个区做单独的配置，就成了如上的效果；2个区（dev，test）,然后分别配置这个环境的信息。这样的好处是，一个配置文件，可以配置不同环境的信息，方便维护。这是有人就问了，既然一个配置文件加载了多个环境的配置信息，那么项目怎么选择启动哪个环境呢？其实很简单，首先是默认环境。怎么指定默认环境呢，上面的配置文件已经有指定的方式了，就是如下的配置：</p>
+<pre><code>spring:
+  profiles:
+    active: test</code></pre><p>这个配置表示默认加载测试环境的配置信息。这个没问题了，新的问题又出现了，那我要指定用开发环境呢？只能修改active项的配置？答案是不用，不用这么麻烦。默认只是一种规定，可以写死，但是部署的动作是活的，没法指定的，这时，我们就需要在环境加载时选择环境，因此，放在启动命令执行时就最合适不过了。那么怎么在启动时选择加载呢？<br>例子如下：</p>
+<pre><code>java -jar distributed-idempotent.jar --spring.profiles.active=dev</code></pre><p>这行shell表示启动一个当前目录下，名字为distributed-idempotent.jar的jar包，然后选择启动spring的环境，环境配置的名字为dev,即本次项目启动加载开发环境的配置文件，这样就替换了默认的测试环境，方便简单。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/05/SpringBoot多环境yml配置/" data-id="cjzl2vhsp000ak8kbwhjanf6b"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-distributed-idempotent" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/02/02/distributed-idempotent/">简单的分布式幂等注解的设计与实现</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/02/distributed-idempotent/" class="article-date">
+  <time datetime="2018-02-02T06:44:09.000Z" itemprop="datePublished">2018-02-02</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="简单的分布式幂等注解的设计与实现"><a href="#简单的分布式幂等注解的设计与实现" class="headerlink" title="简单的分布式幂等注解的设计与实现"></a>简单的分布式幂等注解的设计与实现</h2><p>近几年，互联网后台都在朝着微服务化的方向发展，和传统的单项目相比，微服务化的后台，没了传统的数据库事物的支持，数据的一致性就显得尤为的重要。<br>要保证数据一致性，有很多方面需要注意，其中，最常见的就是接口的幂等。<br>分布式的环境，对网络的依赖比较严重，因此，一些网络异常的重试机制就理所应当的存在着，这时，如果不考虑接口的幂等性，那将会带来无穷的灾难。<br>幂等性是系统的接口对外一种承诺(而不是实现), 承诺只要调用接口成功, 外部多次调用对系统的影响是一致的。声明为幂等的接口会认为外部调用失败是常态, 并且失败之后必然会有重试.<br>保证接口的幂等呢个，要从两个方面入手：</p>
+<pre><code>一.接口本身设计成幂等的（根据业务实现）;
+二.对接口做额外的幂等处理。</code></pre><p>对于第一点，需要根据业务不同，具体设计实现，而对于第二点，则可以设计一个共同的方式处理。<br>以下是几种常见的方案：</p>
+<p>1.MVCC方案</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;多版本并发控制，该策略主要使用update with condition（更新带条件来防止）来保证多次外部请求调用<br>对系统的影响是一致的。在系统设计的过程中，合理的使用乐观锁，通过version或者updateTime（timestamp）<br>等其他条件，来做乐观锁的判断条件，这样保证更新操作即使在并发的情况下，也不会有太大的问题。<br>例如：<br>select * from tablename where condition=#condition# //取出要跟新的对象，带有版本versoin<br>update tableName set name=#name#,version=version+1 where version=#version#<br>在更新的过程中利用version来防止，其他操作对对象的并发更新，导致更新丢失。为了避免失败，通常需要一定的重试机制。</p>
+<p>2.去重表</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;在插入数据的时候，插入去重表，利用数据库的唯一索引特性，保证唯一的逻辑。</p>
+<p>3.悲观锁</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;select for update，整个执行过程中锁定该订单对应的记录。注意：这种在DB读大于写的情况下尽量少用。</p>
+<p>4.select + insert</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;并发不高的后台系统，或者一些任务JOB，为了支持幂等，支持重复执行，简单的处理方法是，先查询下一些关键数据，判断是否已经执行过，<br>在进行业务处理，就可以了。注意：核心高并发流程不要用这种方法。</p>
+<p>5.状态机幂等</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;在设计单据相关的业务，或者是任务相关的业务，肯定会涉及到状态机，就是业务单据上面有个状态，状态在不同的情况下会发生变更，一般情况下存<br>在有限状态机，这时候，如果状态机已经处于下一个状态，这时候来了一个上一个状态的变更，理论上是不能够变更的，这样的话，保证了有限状态机的幂等。</p>
+<p>6.token机制，防止页面重复提交</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;业务要求：页面的数据只能被点击提交一次.<br>&nbsp;&nbsp;&nbsp;&nbsp;发生原因：由于重复点击或者网络重发，或者nginx重发等情况会导致数据被重复提交.<br>&nbsp;&nbsp;&nbsp;&nbsp;解决办法：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;集群环境：采用token加redis（redis单线程的，处理需要排队）<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;单JVM环境：采用token加redis或token加jvm内存<br>&nbsp;&nbsp;&nbsp;&nbsp;处理流程：<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据提交前要向服务的申请token，token放到redis或jvm内存，token有效时间<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;提交后后台校验token，同时删除token，生成新的token返回<br>token特点:要申请，一次有效性，可以限流 </p>
+<p>7.对外提供接口的api如何保证幂等 </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;如银联提供的付款接口：需要接入商户提交付款请求时附带：source来源，seq序列号。source+seq在数据库里面做唯一索引，防止多次付款，<br>(并发时，只能处理一个请求)</p>
+<p>以上7中均为常见的幂等保证方式，今天我们就采用第7种做幂等处理。</p>
+<p>直接上代码：</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;1.幂等切入的切点注解。</p>
+<pre><code>/**
+ * Created with Jingyan
+ * Time: 2018-01-02 15:42
+ * Description: 幂等注解
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Idempotent {
+
+}</code></pre><p>&nbsp;&nbsp;&nbsp;&nbsp;2.切面，处理通知。</p>
+<pre><code>/**
+ * @Author: Jingyan
+ * @Time: 2017-11-28 14:32
+ * @Description:
+ */
+@Aspect
+@Component
+@Order(-1)
+public class IdempotentAspect {
+
+    private static Logger logger = LoggerFactory.getLogger(IdempotentAspect.class);
+    //默认超时时间一天
+    private static final int UUID_KEEP_TIME = 86400;
+    //获取stringRedisTemplate
+    private StringRedisTemplate stringRedisTemplate = SpringContainer.getBean(StringRedisTemplate.class);
+
+    /**
+     * Created with Jingyan
+     * Time: 2018-01-25 14:39
+     * Description: 切点
+     */
+    @Pointcut(&quot;@annotation(com.framework.distributed.idempotent.aop.Idempotent)&quot;)
+    public void idempotentPointCut() {
+        logger.debug(&quot;idempotentPointCut()&quot;);
+    }
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-11-28 18:45
+     * Description：切面
+     */
+    @Before(&quot;idempotentPointCut()&quot;)
+    public void doBefore(JoinPoint joinPoin) {
+        try {
+            Object[] params = joinPoin.getArgs();
+            if (null != params &amp;&amp; params.length &gt; 0) {
+                for (Object obj : params) {
+                    if (obj instanceof BaseVo) {
+                        BaseVo baseVo = (BaseVo) obj;
+                        String newUuid = baseVo.getUuid();
+                        if (null != newUuid &amp;&amp; !&quot;&quot;.equals(newUuid)) {
+                            String oldUuid = this.stringRedisTemplate.opsForValue().getAndSet(newUuid, newUuid);
+                            this.stringRedisTemplate.expire(newUuid, UUID_KEEP_TIME, TimeUnit.SECONDS);
+                            logger.info(&quot;idempotent --- this time uuid = {} , and the last time uuid = {}&quot;, newUuid, oldUuid);
+                            if (null == oldUuid || &quot;&quot;.equals(oldUuid)) {
+                                baseVo.setNeedConsumer(true);
+                            } else {
+                                baseVo.setNeedConsumer(false);
+                            }
+                        } else {
+                            logger.info(&quot;idempotent --- uuid is null or empty...&quot;);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(&quot;幂等切面处理异常...&quot;);
+            logger.error(e.getMessage());
+        }
+    }
+
+}</code></pre><p>此种方案是通过全局的UUID来做，我们利用reids单线程的特点，以及getSet命令的原子性，替换了传统的数据库唯一索引方式，更加合理高效，再加之redis对过期的方便处理，使之成为一个<br>比较优的解决方案。对于RedisTemplate对象的获取，采用通过Class的方式，释放了对项目的约束性。</p>
+<pre><code>private StringRedisTemplate stringRedisTemplate = SpringContainer.getBean(StringRedisTemplate.class);</code></pre><p>接口的幂等性处理思想应该是一个程序员的基因，这是保证后台服务高效、稳定运行的基石，因此，设计接口时，多多考虑会事半功倍。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/02/distributed-idempotent/" data-id="cjzl2vhts001hk8kbhfbnfndm"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Spring-AOP-LOG" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2018/02/01/Spring-AOP-LOG/">Spring AOP-LOG</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/01/Spring-AOP-LOG/" class="article-date">
+  <time datetime="2018-02-01T11:25:40.000Z" itemprop="datePublished">2018-02-01</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Spring-AOP-LOG"><a href="#Spring-AOP-LOG" class="headerlink" title="Spring AOP-LOG"></a>Spring AOP-LOG</h2><p>AOP是Spring的核心思想,但是我们自己编程却很少用到这个思想，其实这个听起来很抽象的概念，如果弄清楚了，用起来还是很方便的。<br>下面写个例子,可以体会下AOP做日志打印的便利之处。</p>
+<pre><code>@Aspect
+@Component
+@Order(-5)
+public class LogAspect {
+
+    private static Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    private static final String POINT_CUT = &quot;execution(public * com..*.controller.*.*(..)) &quot; +
+            &quot;&amp;&amp; @annotation(org.springframework.web.bind.annotation.RequestMapping))&quot;;
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-11-24 17:56
+     * Description:  日志打印切点
+     */
+    @Pointcut(POINT_CUT)
+    public void webLog() {
+
+    }
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-12-18 9:37
+     * Description:  入参
+     */
+    @Before(value = &quot;webLog()&quot;)
+    public void doBefore(JoinPoint joinPoint) {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            Enumeration&lt;String&gt; paramNames = request.getParameterNames();
+            Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+            while (paramNames.hasMoreElements()) {
+                String paraName = paramNames.nextElement();
+                map.put(paraName, request.getParameter(paraName));
+            }
+            logger.info(&quot; method={} 入参: param={}&quot;, joinPoint.getSignature().getDeclaringTypeName()
+                    + &quot;.&quot;
+                    + joinPoint.getSignature().getName(), JsonUtil.toJson(map));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-12-18 9:37
+     * Description: 出参
+     */
+    @AfterReturning(value = &quot;webLog()&quot;, returning = &quot;retVal&quot;)
+    public void doAfterReturning(JoinPoint joinPoint, Object retVal) {
+        try {
+            logger.info(&quot; method={} 出参: param={}&quot;, joinPoint.getSignature().getDeclaringTypeName()
+                    + &quot;.&quot;
+                    + joinPoint.getSignature().getName(), JsonUtil.toJson(retVal));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+}</code></pre><p>首先，定义一个切入点，即在 controller 包下并且有 RequestMapping 注解的方法；**<br>接着，对切点进行拦截，实现通知。</p>
+<p>在Spring AOP中支持4中类型的通知：</p>
+<pre><code>1：before advice 在方法执行前执行。
+2：after returning advice 在方法执行后返回一个结果后执行。
+3：after throwing advice 在方法执行过程中抛出异常的时候执行。
+4：around advice 环绕通知，在方法执行前后和抛出异常时执行，相当于综合了以上三种通知。</code></pre><p>这样，一个简单的日志切面就写完了，核心思想就两步，1.定义切点；2.实现通知。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/01/Spring-AOP-LOG/" data-id="cjzl2vhsl0006k8kba3jxua1r"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Activiti-Spring配置" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2017/02/23/Activiti-Spring配置/">Activiti+Spring配置</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/23/Activiti-Spring配置/" class="article-date">
+  <time datetime="2017-02-23T11:43:08.000Z" itemprop="datePublished">2017-02-23</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Activiti-Spring配置-百度图片镇楼"><a href="#Activiti-Spring配置-百度图片镇楼" class="headerlink" title="Activiti+Spring配置(百度图片镇楼)"></a>Activiti+Spring配置(百度图片镇楼)</h2><h3 id="1-依赖的包（maven构建，其他Spring依赖的包不赘述了）"><a href="#1-依赖的包（maven构建，其他Spring依赖的包不赘述了）" class="headerlink" title="1.依赖的包（maven构建，其他Spring依赖的包不赘述了）"></a>1.依赖的包（maven构建，其他Spring依赖的包不赘述了）</h3><pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-engine&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-spring&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.activiti&lt;/groupId&gt;
+  &lt;artifactId&gt;activiti-json-converter&lt;/artifactId&gt;
+  &lt;version&gt;${activiti.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre><h3 id="2-activiti-cfg-xml配置Activiti引擎，以及实例化7大接口（上图的接口）"><a href="#2-activiti-cfg-xml配置Activiti引擎，以及实例化7大接口（上图的接口）" class="headerlink" title="2.activiti.cfg.xml配置Activiti引擎，以及实例化7大接口（上图的接口）"></a>2.activiti.cfg.xml配置Activiti引擎，以及实例化7大接口（上图的接口）</h3><pre><code>&lt;!-- jingyan --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+    &lt;bean id=&quot;objectMapper&quot; class=&quot;com.fasterxml.jackson.databind.ObjectMapper&quot;/&gt;
+    &lt;bean id=&quot;processEngineConfiguration&quot; class=&quot;org.activiti.spring.SpringProcessEngineConfiguration&quot;&gt;
+            &lt;!-- Activiti第一次启动时会初始化自己的数据库，所以需要数据源 --&gt;
+            &lt;!-- 如果自动创建表时，有索引外键之类的报错，请检查数据库驱动包的版本兼容性，我亲身经历过 --&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+        &lt;property name=&quot;transactionManager&quot; ref=&quot;transactionManager&quot;/&gt;
+        &lt;property name=&quot;databaseSchemaUpdate&quot; value=&quot;true&quot;/&gt;
+        &lt;property name=&quot;jobExecutorActivate&quot; value=&quot;false&quot;/&gt;
+        &lt;!-- 配置部署缓存 可参考 API 实现自己的缓存 --&gt;
+        &lt;property name=&quot;processDefinitionCacheLimit&quot; value=&quot;10&quot;/&gt;
+        &lt;!-- 配置历史 --&gt;
+        &lt;property name=&quot;history&quot; value=&quot;full&quot;/&gt;
+        &lt;!-- mail配置，具体再配 --&gt;
+        &lt;property name=&quot;mailServerHost&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerUsername&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerPassword&quot; value=&quot;xxx&quot;/&gt;
+        &lt;property name=&quot;mailServerPort&quot; value=&quot;xxx&quot;/&gt;
+        &lt;!-- 批量发布流程 --&gt;
+        &lt;property name=&quot;deploymentResources&quot;&gt;
+            &lt;list&gt;
+                &lt;value&gt;classpath*:/deployments/*&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+        &lt;!-- 自动部署发布流程模板 单例模式 --&gt;
+        &lt;property name=&quot;deploymentMode&quot; value=&quot;single-resource&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;processEngine&quot; class=&quot;org.activiti.spring.ProcessEngineFactoryBean&quot;&gt;
+        &lt;property name=&quot;processEngineConfiguration&quot; ref=&quot;processEngineConfiguration&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;!-- 7大接口 --&gt;
+    &lt;bean id=&quot;repositoryService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getRepositoryService&quot;/&gt;
+    &lt;bean id=&quot;runtimeService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getRuntimeService&quot;/&gt;
+    &lt;bean id=&quot;formService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getFormService&quot;/&gt;
+    &lt;bean id=&quot;identityService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getIdentityService&quot;/&gt;
+    &lt;bean id=&quot;taskService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getTaskService&quot;/&gt;
+    &lt;bean id=&quot;historyService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getHistoryService&quot;/&gt;
+    &lt;bean id=&quot;managementService&quot; factory-bean=&quot;processEngine&quot; factory-method=&quot;getManagementService&quot;/&gt;
+&lt;/beans&gt;</code></pre><p>Activiti-activiti-5.19.0 源码里面 MySql 初始化数据库的SQL如下：</p>
+<pre><code>create table ACT_GE_PROPERTY (
+    NAME_ varchar(64),
+    VALUE_ varchar(300),
+    REV_ integer,
+    primary key (NAME_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+insert into ACT_GE_PROPERTY
+values (&apos;schema.version&apos;, &apos;5.18.0.1&apos;, 1);
+
+insert into ACT_GE_PROPERTY
+values (&apos;schema.history&apos;, &apos;create(5.18.0.1)&apos;, 1);
+
+insert into ACT_GE_PROPERTY
+values (&apos;next.dbid&apos;, &apos;1&apos;, 1);
+
+create table ACT_GE_BYTEARRAY (
+    ID_ varchar(64),
+    REV_ integer,
+    NAME_ varchar(255),
+    DEPLOYMENT_ID_ varchar(64),
+    BYTES_ LONGBLOB,
+    GENERATED_ TINYINT,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_DEPLOYMENT (
+    ID_ varchar(64),
+    NAME_ varchar(255),
+    CATEGORY_ varchar(255),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    DEPLOY_TIME_ timestamp(3),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_MODEL (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    NAME_ varchar(255),
+    KEY_ varchar(255),
+    CATEGORY_ varchar(255),
+    CREATE_TIME_ timestamp(3) null,
+    LAST_UPDATE_TIME_ timestamp(3) null,
+    VERSION_ integer,
+    META_INFO_ varchar(4000),
+    DEPLOYMENT_ID_ varchar(64),
+    EDITOR_SOURCE_VALUE_ID_ varchar(64),
+    EDITOR_SOURCE_EXTRA_VALUE_ID_ varchar(64),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_EXECUTION (
+    ID_ varchar(64),
+    REV_ integer,
+    PROC_INST_ID_ varchar(64),
+    BUSINESS_KEY_ varchar(255),
+    PARENT_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    SUPER_EXEC_ varchar(64),
+    ACT_ID_ varchar(255),
+    IS_ACTIVE_ TINYINT,
+    IS_CONCURRENT_ TINYINT,
+    IS_SCOPE_ TINYINT,
+    IS_EVENT_SCOPE_ TINYINT,
+    SUSPENSION_STATE_ integer,
+    CACHED_ENT_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    NAME_ varchar(255),
+    LOCK_TIME_ timestamp(3) NULL,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_JOB (
+    ID_ varchar(64) NOT NULL,
+    REV_ integer,
+    TYPE_ varchar(255) NOT NULL,
+    LOCK_EXP_TIME_ timestamp(3) NULL,
+    LOCK_OWNER_ varchar(255),
+    EXCLUSIVE_ boolean,
+    EXECUTION_ID_ varchar(64),
+    PROCESS_INSTANCE_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    RETRIES_ integer,
+    EXCEPTION_STACK_ID_ varchar(64),
+    EXCEPTION_MSG_ varchar(4000),
+    DUEDATE_ timestamp(3) NULL,
+    REPEAT_ varchar(255),
+    HANDLER_TYPE_ varchar(255),
+    HANDLER_CFG_ varchar(4000),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RE_PROCDEF (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    CATEGORY_ varchar(255),
+    NAME_ varchar(255),
+    KEY_ varchar(255) not null,
+    VERSION_ integer not null,
+    DEPLOYMENT_ID_ varchar(64),
+    RESOURCE_NAME_ varchar(4000),
+    DGRM_RESOURCE_NAME_ varchar(4000),
+    DESCRIPTION_ varchar(4000),
+    HAS_START_FORM_KEY_ TINYINT,
+    HAS_GRAPHICAL_NOTATION_ TINYINT,
+    SUSPENSION_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_TASK (
+    ID_ varchar(64),
+    REV_ integer,
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    NAME_ varchar(255),
+    PARENT_TASK_ID_ varchar(64),
+    DESCRIPTION_ varchar(4000),
+    TASK_DEF_KEY_ varchar(255),
+    OWNER_ varchar(255),
+    ASSIGNEE_ varchar(255),
+    DELEGATION_ varchar(64),
+    PRIORITY_ integer,
+    CREATE_TIME_ timestamp(3),
+    DUE_DATE_ datetime(3),
+    CATEGORY_ varchar(255),
+    SUSPENSION_STATE_ integer,
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    FORM_KEY_ varchar(255),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_IDENTITYLINK (
+    ID_ varchar(64),
+    REV_ integer,
+    GROUP_ID_ varchar(255),
+    TYPE_ varchar(255),
+    USER_ID_ varchar(255),
+    TASK_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    PROC_DEF_ID_ varchar(64),    
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_VARIABLE (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    TYPE_ varchar(255) not null,
+    NAME_ varchar(255) not null,
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    TASK_ID_ varchar(64),
+    BYTEARRAY_ID_ varchar(64),
+    DOUBLE_ double,
+    LONG_ bigint,
+    TEXT_ varchar(4000),
+    TEXT2_ varchar(4000),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_RU_EVENT_SUBSCR (
+    ID_ varchar(64) not null,
+    REV_ integer,
+    EVENT_TYPE_ varchar(255) not null,
+    EVENT_NAME_ varchar(255),
+    EXECUTION_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    ACTIVITY_ID_ varchar(64),
+    CONFIGURATION_ varchar(255),
+    CREATED_ timestamp(3) not null DEFAULT CURRENT_TIMESTAMP(3),
+    PROC_DEF_ID_ varchar(64),
+    TENANT_ID_ varchar(255) default &apos;&apos;,
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_EVT_LOG (
+    LOG_NR_ bigint auto_increment,
+    TYPE_ varchar(64),
+    PROC_DEF_ID_ varchar(64),
+    PROC_INST_ID_ varchar(64),
+    EXECUTION_ID_ varchar(64),
+    TASK_ID_ varchar(64),
+    TIME_STAMP_ timestamp(3) not null,
+    USER_ID_ varchar(255),
+    DATA_ LONGBLOB,
+    LOCK_OWNER_ varchar(255),
+    LOCK_TIME_ timestamp(3) null,
+    IS_PROCESSED_ tinyint default 0,
+    primary key (LOG_NR_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create table ACT_PROCDEF_INFO (
+    ID_ varchar(64) not null,
+    PROC_DEF_ID_ varchar(64) not null,
+    REV_ integer,
+    INFO_JSON_ID_ varchar(64),
+    primary key (ID_)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
+
+create index ACT_IDX_EXEC_BUSKEY on ACT_RU_EXECUTION(BUSINESS_KEY_);
+create index ACT_IDX_TASK_CREATE on ACT_RU_TASK(CREATE_TIME_);
+create index ACT_IDX_IDENT_LNK_USER on ACT_RU_IDENTITYLINK(USER_ID_);
+create index ACT_IDX_IDENT_LNK_GROUP on ACT_RU_IDENTITYLINK(GROUP_ID_);
+create index ACT_IDX_EVENT_SUBSCR_CONFIG_ on ACT_RU_EVENT_SUBSCR(CONFIGURATION_);
+create index ACT_IDX_VARIABLE_TASK_ID on ACT_RU_VARIABLE(TASK_ID_);
+create index ACT_IDX_ATHRZ_PROCEDEF on ACT_RU_IDENTITYLINK(PROC_DEF_ID_);
+create index ACT_IDX_INFO_PROCDEF on ACT_PROCDEF_INFO(PROC_DEF_ID_);
+
+alter table ACT_GE_BYTEARRAY
+    add constraint ACT_FK_BYTEARR_DEPL 
+    foreign key (DEPLOYMENT_ID_) 
+    references ACT_RE_DEPLOYMENT (ID_);
+
+alter table ACT_RE_PROCDEF
+    add constraint ACT_UNIQ_PROCDEF
+    unique (KEY_,VERSION_, TENANT_ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PROCINST 
+    foreign key (PROC_INST_ID_) 
+    references ACT_RU_EXECUTION (ID_) on delete cascade on update cascade;
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PARENT 
+    foreign key (PARENT_ID_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_SUPER 
+    foreign key (SUPER_EXEC_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_EXECUTION
+    add constraint ACT_FK_EXE_PROCDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_TSKASS_TASK 
+    foreign key (TASK_ID_) 
+    references ACT_RU_TASK (ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_ATHRZ_PROCEDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF(ID_);
+
+alter table ACT_RU_IDENTITYLINK
+    add constraint ACT_FK_IDL_PROCINST
+    foreign key (PROC_INST_ID_) 
+    references ACT_RU_EXECUTION (ID_);       
+
+alter table ACT_RU_TASK
+    add constraint ACT_FK_TASK_EXE
+    foreign key (EXECUTION_ID_)
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_TASK
+    add constraint ACT_FK_TASK_PROCINST
+    foreign key (PROC_INST_ID_)
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_TASK
+      add constraint ACT_FK_TASK_PROCDEF
+      foreign key (PROC_DEF_ID_)
+      references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_RU_VARIABLE 
+    add constraint ACT_FK_VAR_EXE 
+    foreign key (EXECUTION_ID_) 
+    references ACT_RU_EXECUTION (ID_);
+
+alter table ACT_RU_VARIABLE
+    add constraint ACT_FK_VAR_PROCINST
+    foreign key (PROC_INST_ID_)
+    references ACT_RU_EXECUTION(ID_);
+
+alter table ACT_RU_VARIABLE 
+    add constraint ACT_FK_VAR_BYTEARRAY 
+    foreign key (BYTEARRAY_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RU_JOB 
+    add constraint ACT_FK_JOB_EXCEPTION 
+    foreign key (EXCEPTION_STACK_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RU_EVENT_SUBSCR
+    add constraint ACT_FK_EVENT_EXEC
+    foreign key (EXECUTION_ID_)
+    references ACT_RU_EXECUTION(ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_SOURCE 
+    foreign key (EDITOR_SOURCE_VALUE_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_SOURCE_EXTRA 
+    foreign key (EDITOR_SOURCE_EXTRA_VALUE_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_RE_MODEL 
+    add constraint ACT_FK_MODEL_DEPLOYMENT 
+    foreign key (DEPLOYMENT_ID_) 
+    references ACT_RE_DEPLOYMENT (ID_);        
+
+alter table ACT_PROCDEF_INFO 
+    add constraint ACT_FK_INFO_JSON_BA 
+    foreign key (INFO_JSON_ID_) 
+    references ACT_GE_BYTEARRAY (ID_);
+
+alter table ACT_PROCDEF_INFO 
+    add constraint ACT_FK_INFO_PROCDEF 
+    foreign key (PROC_DEF_ID_) 
+    references ACT_RE_PROCDEF (ID_);
+
+alter table ACT_PROCDEF_INFO
+    add constraint ACT_UNIQ_INFO_PROCDEF
+    unique (PROC_DEF_ID_);</code></pre><h3 id="3-设计工作流模板"><a href="#3-设计工作流模板" class="headerlink" title="3.设计工作流模板"></a>3.设计工作流模板</h3><pre><code>根据具体业务自行设计（需要提前学习 BPMN2.0 规范）</code></pre><h3 id="4-调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）"><a href="#4-调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）" class="headerlink" title="4.调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）"></a>4.调用接口，启用流程。（部署可选手动发布，也可以随着项目启动自动部署）</h3><pre><code>import net.sf.json.JSONObject;
+import org.activiti.engine.*;
+import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by jingyan on 2016/8/23.
+ * activiti 主要接口，提供：
+ * 启动任务、
+ * 查询自己代办任务、
+ * 查询运行中 和 已完成流程、
+ * 签收任务、
+ * 完成任务、
+ * 查询任务详细数据。
+ */
+@Service
+public class ActWorkFlowServiceImp implements ActWorkFlowService {
+
+    private static Logger logger = LoggerFactory.getLogger(ActWorkFlowServiceImp.class);
+
+    @Autowired
+    private ProcessEngine processEngine;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    protected TaskService taskService;
+    @Autowired
+    protected HistoryService historyService;
+    @Autowired
+    protected RepositoryService repositoryService;
+    @Autowired
+    private IdentityService identityService;
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/17  10:33
+     * Description: 手动部署工作流
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject deployWorkflow(String deploymentName, String bpmnFileName) {
+        String resPath = ConstantCode.BPMN_PATH + bpmnFileName;
+        logger.info(&quot;工作流手动部署,资源路径：&quot; + resPath);
+        Deployment deployment = processEngine.getRepositoryService().createDeployment().name(deploymentName).addClasspathResource(resPath).deploy();
+        if (!PubMethod.isEmpty(deployment)) {
+            logger.info(&quot;流程部署成功：ID=&quot; + deployment.getId() + &quot;   ,NAME=&quot; + deployment.getName());
+            return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;部署成功&quot;, deployment.getId());
+        }
+        return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;部署失败&quot;, &quot;&quot;);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  9:52
+     * Description: 启动工作流
+     * param: processDefinitionKey --- 流程文件定义KEY
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject startActWorkFlow(String businessKey, String userId, String businessType, String jsonParamStr) {
+        logger.info(&quot;启动任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + businessKey + &quot;,jsonParamStr:&quot; + jsonParamStr + &quot;]&quot;);
+        try {
+            List&lt;Task&gt; listTask = getTasksByBusKey(businessKey);
+            if (!PubMethod.isEmpty(listTask)) {
+                logger.info(&quot;业务数据：&quot; + businessKey + &quot;的任务已存在.&quot;);
+                return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;该业务已存在审批中的数据&quot;, &quot;&quot;);
+            }
+            JSONObject js = JSONObject.fromObject(jsonParamStr);
+            Map&lt;String, Object&gt; map = PubMethod.json2Map(js);
+            // 设置启动人员ID (DB： ACT_HI_PROCINST → START_USER_ID_）
+            identityService.setAuthenticatedUserId(userId);
+            String processDefKey = ProcessDefKeyEnum.valueOf(Integer.parseInt(businessType)).getProcessDefKey();
+            runtimeService.startProcessInstanceByKey(processDefKey, businessKey, map);
+            List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+            if (PubMethod.isEmpty(tasks)) {
+                return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;启动失败&quot;, &quot;&quot;);
+            }
+            List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+            ResponseVo responseVo = new ResponseVo();
+            responseVo.setUserTaskVos(list);
+            return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;启动成功&quot;, responseVo);
+        } finally {
+            identityService.setAuthenticatedUserId(null);
+        }
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 签收任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject signforTask(String businessKey, String userId) {
+        logger.info(&quot;签收任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + userId + &quot;]&quot;);
+        List&lt;Task&gt; listTask = getTasksByCandidateUser(businessKey, userId);
+        if (PubMethod.isEmpty(listTask)) {
+            logger.info(&quot;签收-未查询到：&quot; + businessKey + &quot;的任务&quot;);
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;您无权处理该笔数据&quot;, &quot;&quot;);
+        }
+        if (listTask.size() != 1) {
+            logger.info(&quot;签收-业务主键：&quot; + businessKey + &quot;的任务不唯一&quot;);
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;该笔业务异常&quot;, &quot;&quot;);
+        }
+        taskService.claim(listTask.get(0).getId(), userId);
+        List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+        if (PubMethod.isEmpty(tasks)) {
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;签收失败&quot;, &quot;&quot;);
+        }
+        List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+        ResponseVo responseVo = new ResponseVo();
+        responseVo.setUserTaskVos(list);
+        return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;签收成功&quot;, responseVo);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 提交任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject completeTask(String businessKey, String userId, String jsonParamStr) {
+        logger.info(&quot;提交任务入参[businessKey:&quot; + businessKey + &quot;,userId:&quot; + userId + &quot;,jsonParamStr:&quot; + jsonParamStr + &quot;]&quot;);
+        List&lt;Task&gt; listTask = getTasksByAssignee(businessKey, userId);
+        if (PubMethod.isEmpty(listTask)) {
+            logger.info(&quot;提交-未查询到：&quot; + businessKey + &quot;的任务&quot;);
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;提交的任务不存在&quot;, &quot;&quot;);
+        }
+        if (listTask.size() != 1) {
+            logger.info(&quot;提交-业务主键：&quot; + businessKey + &quot;的任务不唯一&quot;);
+            return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;该笔业务异常&quot;, &quot;&quot;);
+        }
+        JSONObject js = JSONObject.fromObject(jsonParamStr);
+        Map&lt;String, Object&gt; map = PubMethod.json2Map(js);
+        taskService.complete(listTask.get(0).getId(), map);
+        List&lt;Task&gt; tasks = getTasksByBusKey(businessKey);
+        if (PubMethod.isEmpty(tasks)) {
+            if (null == js.get(&quot;fkwc_result&quot;)) {
+                return ReturnUtil.createJSON(ReturnCode.BUES_DEAL_ERROR.getCode(), &quot;提交失败&quot;, &quot;&quot;);
+            } else {
+                return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;success&quot;, &quot;&quot;);
+            }
+
+        }
+        List&lt;UserTaskVo&gt; list = handleUserTask(tasks, businessKey);
+        ResponseVo responseVo = new ResponseVo();
+        responseVo.setUserTaskVos(list);
+        return ReturnUtil.createJSONList(ReturnCode.REQ_SUCCESS.getCode(), &quot;提交成功&quot;, responseVo);
+    }
+
+        /**
+     * Created with: jingyan.
+     * Date: 2016/8/24  11:11
+     * Description: 挂起任务
+     */
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public JSONObject suspendProcess(String businessKey) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+        if (null == processInstance) {
+            return ReturnUtil.createJSON(ReturnCode.REQ_PARAM_ERROR.getCode(), &quot;工作流未查询到业务数据&quot;, &quot;&quot;);
+        }
+        runtimeService.suspendProcessInstanceById(processInstance.getProcessInstanceId());
+        return ReturnUtil.createJSON(ReturnCode.REQ_SUCCESS.getCode(), &quot;success&quot;, null);
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByBusKey(String businessKey) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+        return tasks;
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 + 候选人 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByCandidateUser(String businessKey, String userId) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskCandidateUser(userId).list();
+        return tasks;
+    }
+
+    /**
+     * Created with: jingyan.
+     * Date: 2016/10/19  20:09
+     * Description: 根据 业务主键 + 签收人 获取任务实例
+     */
+    public List&lt;Task&gt; getTasksByAssignee(String businessKey, String userId) {
+        List&lt;Task&gt; tasks = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskAssignee(userId).list();
+        return tasks;
+    }
+}</code></pre><h3 id="5-配置-ServiceTask-（如需要）"><a href="#5-配置-ServiceTask-（如需要）" class="headerlink" title="5.配置 ServiceTask （如需要）"></a>5.配置 ServiceTask （如需要）</h3><pre><code>&lt;serviceTask activiti:class=&quot;com.xx.activiti.servicetask.ApprovalServiceTask&quot; activiti:exclusive=&quot;true&quot; id=&quot;xx&quot; name=&quot;serviceTask&quot;/&gt;</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/23/Activiti-Spring配置/" data-id="cjzl2vhu4001lk8kbtv3xsjnv"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Log4j常用配置" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2017/02/23/Log4j常用配置/">Log4j常用配置</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/23/Log4j常用配置/" class="article-date">
+  <time datetime="2017-02-23T11:01:46.000Z" itemprop="datePublished">2017-02-23</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Log4j常用配置"><a href="#Log4j常用配置" class="headerlink" title="Log4j常用配置"></a>Log4j常用配置</h2><pre><code># DEBUG,INFO,WARN,ERROR,FATAL
+# change in pom.xml
+
+log4j.rootLogger=DEBUG,CONSOLE,FILE
+
+log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+log4j.appender.CONSOLE.Encoding=utf-8
+log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+#log4j.appender.CONSOLE.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH:mm:ss} %C{1}@(%F:%L):%m%n
+log4j.appender.CONSOLE.layout.ConversionPattern=[core-erz] %-5p %d{yyyy-MM-dd HH:mm:ss,SSS} %c{1}.%M,%L : %m%n
+
+log4j.appender.FILE=org.apache.log4j.DailyRollingFileAppender
+## 绝对路径
+log4j.appender.FILE.File=/xx/xx/xx.log
+log4j.appender.FILE.Append=true
+log4j.appender.FILE.Encoding=utf-8
+log4j.appender.FILE.DatePattern=&apos;.&apos;yyyy-MM-dd
+log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+#log4j.appender.FILE.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH\:mm\:ss} %C{8}@(%F\:%L)\:%m%n
+log4j.appender.FILE.layout.ConversionPattern=[core-erz] %-5p %d{yyyy-MM-dd HH:mm:ss,SSS} %c{1}.%M,%L : %m%n
+
+#for mybatis3
+log4j.logger.com.ibatis=DEBUG
+log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG
+log4j.logger.com.ibatis.common.jdbc.ScriptRunner=DEBUG
+log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=DEBUG
+log4j.logger.java.sql.Connection=DEBUG
+log4j.logger.java.sql.Statement=DEBUG
+log4j.logger.java.sql.PreparedStatement=DEBUG
+log4j.logger.java.sql.ResultSet=DEBUG</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/23/Log4j常用配置/" data-id="cjzl2vhsk0005k8kb3xby5dt8"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+  </article>
+  
+
+  
+    <nav class="page-nav">
+      
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next page</a>
+    </nav>
+  
+</section>
+</div>
+
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+  <aside class="sidebar">
+    
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

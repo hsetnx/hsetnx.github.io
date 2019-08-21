@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="jumbotron">
+  <div class="video">
+    
+      <div class="video-frame">
+        <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
+      </div>
+    
+    <div class="video-media">
+      <video playsinline="" autoplay="" loop="" muted="" data-autoplay=""
+             poster="/images/ocean/ocean.png" x5-video-player-type="h5">
+        <source src="/images/ocean/ocean.mp4" type="video/mp4">
+        <source src="/images/ocean/ocean.ogv" type="video/ogg">
+        <source src="/images/ocean/ocean.webm" type="video/webm">
+        <p>Your user agent does not support the HTML5 Video element.</p>
+      </video>
+      <div class="video-overlay"></div>
+    </div>
+    <div class="video-inner text-center text-white">
+      <h1><a href="/">悲欢自饮_</a></h1>
+      <p>明日安在,无人能允。</p>
+      <div><img src="/images/default_avatar.png" class="brand" alt="悲欢自饮_"></div>
+    </div>
+    <div class="video-learn-more">
+      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
+    </div>
+  </div>
+</section>
+
+<div id="landingpage">
+  <section class="outer">
+  <article class="articles">
+    
+    <h1 class="page-type-title"></h1>
+
+    
+      
+        
+
+<article id="post-HashSet" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2017/02/23/HashSet/">HashSet</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/23/HashSet/" class="article-date">
+  <time datetime="2017-02-23T10:34:21.000Z" itemprop="datePublished">2017-02-23</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="HashSet-的实现"><a href="#HashSet-的实现" class="headerlink" title="HashSet 的实现"></a>HashSet 的实现</h2><p>对于 HashSet 而言，它是基于 HashMap 实现的，HashSet 底层采用 HashMap 来保存所有<br>元素，因此 HashSet 的实现比较简单，查看 HashSet 的源代码，可以看到如下代码： </p>
+<pre><code>public class HashSet&lt;E&gt;
+        extends AbstractSet&lt;E&gt;
+        implements Set&lt;E&gt;, Cloneable, java.io.Serializable {
+
+    // 使用 HashMap 的 key 保存 HashSet 中所有元素
+    private transient HashMap&lt;E, Object&gt; map;
+    // 定义一个虚拟的 Object 对象作为 HashMap 的 value 
+    private static final Object PRESENT = new Object();
+
+    // 初始化 HashSet，底层会初始化一个 HashMap 
+    public HashSet() {
+        map = new HashMap&lt;E, Object&gt;();
+    }
+
+    // 以指定的 initialCapacity、loadFactor 创建 HashSet 
+    // 其实就是以相应的参数创建 HashMap 
+    public HashSet(int initialCapacity, float loadFactor) {
+        map = new HashMap&lt;E, Object&gt;(initialCapacity, loadFactor);
+    }
+
+    public HashSet(int initialCapacity) {
+        map = new HashMap&lt;E, Object&gt;(initialCapacity);
+    }
+
+    HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+        map = new LinkedHashMap&lt;E, Object&gt;(initialCapacity
+                , loadFactor);
+    }
+
+    // 调用 map 的 keySet 来返回所有的 key 
+    public Iterator&lt;E&gt; iterator() {
+        return map.keySet().iterator();
+    }
+
+    // 调用 HashMap 的 size() 方法返回 Entry 的数量，就得到该 Set 里元素的个数
+    public int size() {
+        return map.size();
+    }
+
+    // 调用 HashMap 的 isEmpty() 判断该 HashSet 是否为空，
+    // 当 HashMap 为空时，对应的 HashSet 也为空
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    // 调用 HashMap 的 containsKey 判断是否包含指定 key 
+    //HashSet 的所有元素就是通过 HashMap 的 key 来保存的
+    public boolean contains(Object o) {
+        return map.containsKey(o);
+    }
+
+    // 将指定元素放入 HashSet 中，也就是将该元素作为 key 放入 HashMap 
+    public boolean add(E e) {
+        return map.put(e, PRESENT) == null;
+    }
+
+    // 调用 HashMap 的 remove 方法删除指定 Entry，也就删除了 HashSet 中对应的元素
+    public boolean remove(Object o) {
+        return map.remove(o) == PRESENT;
+    }
+
+    // 调用 Map 的 clear 方法清空所有 Entry，也就清空了 HashSet 中所有元素
+    public void clear() {
+        map.clear();
+    }
+} </code></pre><p>由上面源程序可以看出，HashSet 的实现其实非常简单，它只是封装了一个 HashMap 对象来存储<br>所有的集合元素，所有放入HashSet中的集合元素实际上由HashMap的key来保存，而HashMap<br>的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。</p>
+<p>HashSet 的绝大部分方法都是通过调用 HashMap 的方法来实现的，因此 HashSet 和 HashMap 两个集合在实现本质上是相同的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/23/HashSet/" data-id="cjzl2vhse0001k8kb71bd7nqb"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Spring事务隔离级别" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2017/02/21/Spring事务隔离级别/">Spring事务隔离级别</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2017/02/21/Spring事务隔离级别/" class="article-date">
+  <time datetime="2017-02-21T13:24:54.000Z" itemprop="datePublished">2017-02-21</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Propagation-（事务的传播属性）"><a href="#Propagation-（事务的传播属性）" class="headerlink" title="Propagation （事务的传播属性）"></a>Propagation （事务的传播属性）</h2><p>Propagation ：key属性确定代理应该给哪个方法增加事务行为。这样的属性最重要的部份是传播行为。<br>有以下选项可供使用：</p>
+<pre><code>PROPAGATION_REQUIRED--支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+PROPAGATION_SUPPORTS--支持当前事务，如果当前没有事务，就以非事务方式执行。
+PROPAGATION_MANDATORY--支持当前事务，如果当前没有事务，就抛出异常。
+PROPAGATION_REQUIRES_NEW--新建事务，如果当前存在事务，把当前事务挂起。
+PROPAGATION_NOT_SUPPORTED--以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛出异常。</code></pre><p>1.PROPAGATION_REQUIRED<br>  加入当前正要执行的事务不在另外一个事务里，那么就起一个新的事务比如说，ServiceB.methodB<br>的事务级别定义为PROPAGATION_REQUIRED, 那么由于执行ServiceA.methodA的时候，ServiceA.methodA<br>已经起了事务，这时调用ServiceB.methodB，ServiceB.methodB看到自己已经运行在ServiceA.methodA<br>的事务内部，就不再起新的事务。而假如ServiceA.methodA运行的时候发现自己没有在事务中，<br>他就会为自己分配一个事务。这样，在ServiceA.methodA或者在ServiceB.methodB内的任何地方<br>出现异常，事务都会被回滚。即使ServiceB.methodB的事务已经被提交，但是ServiceA.methodA<br>在接下来fail要回滚，ServiceB.methodB也要回滚。<br>2.PROPAGATION_SUPPORTS<br>如果当前在事务中，即以事务的形式运行，如果当前不再一个事务中，那么就以非事务的形式运行<br>3.PROPAGATION_MANDATORY<br>必须在一个事务中运行。也就是说，他只能被一个父事务调用。否则，他就要抛出异常。<br>4.PROPAGATION_REQUIRES_NEW<br>  这个就比较绕口了。比如我们设计ServiceA.methodA的事务级别为PROPAGATION_REQUIRED，<br>ServiceB.methodB的事务级别为PROPAGATION_REQUIRES_NEW，那么当执行到ServiceB.methodB的时候，<br>ServiceA.methodA所在的事务就会挂起，ServiceB.methodB会起一个新的事务，等待<br>ServiceB.methodB的事务完成以后，他才继续执行。他与PROPAGATION_REQUIRED的事务区别在于事务<br>的回滚程度了。因为ServiceB.methodB是新起一个事务，那么就是存在两个不同的事务。<br>如果ServiceB.methodB已经提交，那么ServiceA.methodA失败回滚，ServiceB.methodB是不会回滚的。<br>如果ServiceB.methodB失败回滚，如果他抛出的异常被ServiceA.methodA捕获，ServiceA.methodA<br>事务仍然可能提交。<br>5.PROPAGATION_NOT_SUPPORTED<br>当前不支持事务。比如ServiceA.methodA的事务级别是PROPAGATION_REQUIRED ，而ServiceB.methodB<br>的事务级别是PROPAGATION_NOT_SUPPORTED ，那么当执行到ServiceB.methodB时，ServiceA.methodA<br>的事务挂起，而他以非事务的状态运行完，再继续ServiceA.methodA的事务。<br>6.PROPAGATION_NEVER<br>不能在事务中运行。假设ServiceA.methodA的事务级别是PROPAGATION_REQUIRED，而ServiceB.methodB<br>的事务级别是PROPAGATION_NEVER ，那么ServiceB.methodB就要抛出异常了。<br>7.PROPAGATION_NESTED<br>理解Nested的关键是savepoint。他与PROPAGATION_REQUIRES_NEW的区别是，<br>PROPAGATION_REQUIRES_NEW另起一个事务，将会与他的父事务相互独立，而Nested的事务<br>和他的父事务是相依的，他的提交是要等和他的父事务一块提交的。也就是说，如果父事务最后回滚，<br>他也要回滚的。而Nested事务的好处是他有一个savepoint。</p>
+<pre><code>ServiceA {
+    //事务属性配置为 PROPAGATION_REQUIRED
+    void methodA() {
+        try {
+            //savepoint
+            //PROPAGATION_NESTED 级别
+            ServiceB.methodB(); 
+        } catch (SomeException) {
+            // 执行其他业务, 如 ServiceC.methodC();
+        }
+    }
+}</code></pre><p>也就是说ServiceB.methodB失败回滚，那么ServiceA.methodA也会回滚到savepoint点上，<br>ServiceA.methodA可以选择另外一个分支，比如ServiceC.methodC，继续执行，来尝试完成自己的事务。<br>但是这个事务并没有在EJB标准中定义。</p>
+<p>Spring事务的隔离级别<br> 1.ISOLATION_DEFAULT： 这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别.<br>    另外四个与JDBC的隔离级别相对应<br> 2.ISOLATION_READ_UNCOMMITTED： 这是事务最低的隔离级别，它充许令外一个事务可以看到这个事务未提交的数据。<br>    这种隔离级别会产生脏读，不可重复读和幻像读。<br> 3.ISOLATION_READ_COMMITTED： 保证一个事务修改的数据提交后才能被另外一个事务读取。另外一个事务不能读取该事务未提交的数据<br> 4.ISOLATION_REPEATABLE_READ： 这种事务隔离级别可以防止脏读，不可重复读。但是可能出现幻像读。<br>    它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了避免下面的情况产生(不可重复读)。<br> 5.ISOLATION_SERIALIZABLE： 这是花费最高代价但是最可靠的事务隔离级别。事务被处理为顺序执行。<br>    除了防止脏读，不可重复读外，还避免了幻像读。</p>
+<p>什么是脏数据，脏读，不可重复读，幻觉读？<br>脏读: 指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，<br>      另外一个事务也访问这个数据，然后使用了这个数据。因为这个数据是还没有提交的数据， 那么另外一<br>      个事务读到的这个数据是脏数据，依据脏数据所做的操作可能是不正确的。<br>不可重复读: 指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。<br>      那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的数据<br>      可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。<br>幻觉读: 指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及<br>      到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，<br>      以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2017/02/21/Spring事务隔离级别/" data-id="cjzl2vhso0009k8kb9irug9ph"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-Java-Collectio" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2016/09/11/Java-Collectio/">Java_Collection</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2016/09/11/Java-Collectio/" class="article-date">
+  <time datetime="2016-09-11T10:35:17.000Z" itemprop="datePublished">2016-09-11</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="JAVA-集合类"><a href="#JAVA-集合类" class="headerlink" title="JAVA 集合类"></a>JAVA 集合类</h2><h3 id="目录"><a href="#目录" class="headerlink" title="目录[-]"></a>目录[-]</h3><pre><code>一、 概述
+二、 set map list的区别
+三、 Collections类和Collection接口
+四、 List接口，有序可重复的集合
+五、 Set接口，代表无序，不可重复的集合
+六、 Map接口：映射
+七、 如何选择</code></pre><hr>
+<p>Map List Set等集合类：<br>一、概述在JAVA的util包中有两个所有集合的父接口Collection和Map,它们的父子关系：<br>+Collection 这个接口extends自 –java.lang.Iterable接口<br> ├+List(接口 代表有序，可重复的集合。列表）<br> │├ ArreyList     (Class 数组，随机访问，没有同步，线程不安全)<br> │├ Vector        (Class  数组                   同步        线程全)<br> │├ LinkedList    (Class  链表   插入删除   没有同步   线程不安全)<br> │└ Stack          (Class)<br> └+Set（接口 不能含重复的元素。仅接收一次并做内部排序，集）<br> │├ HashSet            (Class）<br> │├ LinkedHashSet   (Class）<br> │└ TreeSet       (Class）<br>+Map(接口)<br> ├ +Map(接口 映射集合)<br> │ ├ HashMap            (Class 不同步，线程不安全。除了不同和允许使用null 键值之外，与Hashtable大致相同)<br> │ ├ Hashtable           (Class 同步   ，线程安全    。不允许实施null 键值)<br> │ ├ +SortedMap 接口<br> │ │   ├ TreeMap         (Class)<br> │ ├ WeakHashMap     (Class)<br>以下对众多接口和类的简单说明：首先不能不先说一下数组（Array）<br>1、效率高，但容量固定且无法动态改变。array还有一个缺点是，无法判断其中实际存有多少元素，length只是告诉我们array的容量。<br>2、Java中有一个Arrays类，专门用来操作array。<br>     arrays中拥有一组static函数，<br>     equals()：比较两个array是否相等。array拥有相同元素个数，且所有对应元素两两相等。<br>     fill()：将值填入array中。<br>     sort()：用来对array进行排序。<br>     binarySearch()：在排好序的array中寻找元素。<br>     System.arraycopy()：array的复制。</p>
+<hr>
+<h4 id="一、数组Array和集合的区别："><a href="#一、数组Array和集合的区别：" class="headerlink" title="一、数组Array和集合的区别："></a>一、数组Array和集合的区别：</h4><p>1)  数组是大小固定的，并且同一个数组只能存放类型一样的数据（基本类型/引用类型）<br>2) JAVA集合可以存储和操作数目不固定的一组数据。<br>3)  若程序时不知道究竟需要多少对象，需要在空间不足时自动扩增容量，则需要使用容器类库，array不适用。</p>
+<hr>
+<h4 id="二-set-map-list的区别-都是集合接口-set-－－其中的值不允许重复，无序的数据结构"><a href="#二-set-map-list的区别-都是集合接口-set-－－其中的值不允许重复，无序的数据结构" class="headerlink" title="二 set map list的区别  都是集合接口  set －－其中的值不允许重复，无序的数据结构"></a>二 set map list的区别  都是集合接口  set －－其中的值不允许重复，无序的数据结构</h4><p>  list   －－其中的值允许重复，因为其为有序的数据结构<br>  map－－成对的数据结构，健值必须具有唯一性（键不能同，否则值替换）<br>List 按对象进入的顺序保存对象，不做排序或编辑操作。<br>Set对每个对象只接受一次，并使用自己内部的排序方法（通常，你只关心某个元素是否属于Set,而不关心它的顺序–否则应该使用List）。<br>Map同样对每个元素保存一份，但这是基于”键”的，Map也有内置的排序，因而不关心元素添加的顺序。如果添加元素的顺序对你很重要，应该使用 LinkedHashSet或者LinkedHashMap.<br>Collection 是对象集合， Collection 有两个子接口 List 和 SetList 可以通过下标 (1,2..) 来取得值，值可以重复</p>
+<p>而 Set 只能通过游标来取值，并且值是不能重复的</p>
+<p>ArrayList ， Vector ， LinkedList 是 List 的实现类<br>ArrayList 是线程不安全的， Vector 是线程安全的，这两个类底层都是由数组实现的<br>LinkedList 是线程不安全的，底层是由链表实现的</p>
+<p>Map 是键值对集合<br>HashTable 和 HashMap 是 Map 的实现类<br>HashTable 是线程安全的，不能存储 null 值<br>HashMap 不是线程安全的，可以存储 null 值</p>
+<hr>
+<h4 id="三、-Collections类和Collection接口"><a href="#三、-Collections类和Collection接口" class="headerlink" title="三、 Collections类和Collection接口"></a>三、 Collections类和Collection接口</h4><p>Collections是针对集合类的一个帮助类，他提供一系列静态方法实现对各种集合的搜索、排序、线程安全化等操作。<br>Collection是最基本的集合接口，一个Collection代表一组Object，即Collection的元素（Elements）。一些 Collection允许相同的元素而另一些不行。一些能排序而另一些不行。Java SDK不提供直接继承自Collection的 类，Java SDK提供的类都是继承自Collection的“子接口”如List和Set。<br>所有实现 Collection 接口的类都必须提供两个标准的构造函数：无参数的构造函数用于创建一个空的 Collection ，有一个 Collection 参数的构造函数用于创建一个新的 Collection ，这个新的 Collection 与传入的 Collection 有相同的元素。后一个构造函数允许用户复制一个 Collection 。</p>
+<p>集合类的遍历:遍历通用Collection:<br>　　如何遍历 Collection 中的每一个元素？不论 Collection 的实际类型如何，它都支持一个 iterator() 的方法，该方法返回一个迭代子，使用该迭代子即可逐一访问 Collection 中每一个元素。典型的用法如下：
+　</p>
+<pre><code>Iterator it = collection.iterator(); // 获得一个迭代子
+　　while(it.hasNext()) {
+　　　Object obj = it.next(); // 得到下一个元素
+}</code></pre><p>由 Collection 接口派生的两个接口是 List 和 Set 。 List 按对象进入的顺序保存对象，不做排序或编辑操作。 Set 对每个对象只接受一次，并使用自己内部的排序方法 ( 通常，你只关心某个元素是否属于 Set, 而不关心它的顺序– 否则应该使用 List) 。</p>
+<hr>
+<h4 id="四、-List接口"><a href="#四、-List接口" class="headerlink" title="四、 List接口"></a>四、 List接口</h4><p>有序可重复的集合实际上有两种List: 一种是基本的ArrayList,其优点在于随机访问元素，另一种是更强大的LinkedList,它并不是为快速随机访问设计的，而是具有一套更通用的方法。<br>List : 次序是List最重要的特点：它保证维护元素特定的顺序。List为Collection添加了许多方法，使得能够向List中间插入与移除元素（这只推 荐LinkedList使用。）一个List可以生成ListIterator,使用它可以从两个方向遍历List,也可以从List中间插入和移除元 素。</p>
+<ol>
+<li>ArrayList类<br>1) ArrayList实现了可变大小的数组。它允许所有元素，包括null。ArrayList没有同步。<br>2) size，isEmpty，get，set方法运行时间为常数。但是add方法开销为分摊的常数，添加n个元素需要O(n)的时间。其他的方法运行时间为线性。<br>3) 每个ArrayList实例都有一个容量（Capacity），即用于存储元素的数组的大小。这个容量可随着不断添加新元素而自动增加，但是增长算法 并没有定义。当需要插入大量元素时，在插入前可以调用ensureCapacity方法来增加ArrayList的容量以提高插入效率。<br>4) 和LinkedList一样，ArrayList也是非同步的（unsynchronized）。<br>5) 由数组实现的List。允许对元素进行快速随机访问，但是向List中间插入与移除元素的速度很慢。ListIterator只应该用来由后向前遍历ArrayList,而不是用来插入和移除元素。因为那比LinkedList开销要大很多。</li>
+<li>Vector类<br>　 　Vector非常类似ArrayList，但是Vector是同步的。由Vector创建的Iterator，虽然和ArrayList创建的 Iterator是同一接口，但是，因为Vector是同步的，当一个Iterator被创建而且正在被使用，另一个线程改变了Vector的状态（例 如，添加或删除了一些元素），这时调用Iterator的方法时将抛出ConcurrentModificationException，因此必须捕获该 异常。</li>
+<li>LinkedList类<br>　　LinkedList实现了List接口，允许null元素。此外LinkedList提供额外的get，remove，insert方法在 LinkedList的首部或尾部。如下列方法：addFirst(), addLast(), getFirst(), getLast(), removeFirst() 和 removeLast(), 这些方法 （没有在任何接口或基类中定义过）。这些操作使LinkedList可被用作堆栈（stack），队列（queue）或双向队列（deque）。<br>　　注意LinkedList没有同步方法。如果多个线程同时访问一个List，则必须自己实现访问同步。一种解决方法是在创建List时构造一个同步的List：<br>　　List list = Collections.synchronizedList(new LinkedList(…));</li>
+<li>Stack 类<br>　　Stack继承自Vector，实现一个后进先出的堆栈。Stack提供5个 额外的方法使得Vector得以被当作堆栈使用。基本的push和pop方法，还有peek方法得到栈顶的元素，empty方法测试堆栈是否为 空，search方法检测一个元素在堆栈中的位置。Stack刚创建后是空栈。<br>用法：</li>
+</ol>
+<pre><code>package Test;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+public class TestList {
+    public static void main(String dd[]) {
+        // new了一个存储list
+        List l = new ArrayList();
+         // 因为Collection framework只能存储对象所以new封装类
+         l.add(new Integer(1));
+         l.add(new Integer(2));
+         l.add(new Integer(3));
+         l.add(new Integer(4));
+
+         Iterator it = l.iterator();
+         //使用 迭代器（Iterator）:
+         // hasNext是取值取的是当前值.他的运算过程是判断下个是否有值如果有继续.
+         while (it.hasNext()) {
+             System.out.println(&quot;iterator：Element in list is :   &quot; + it.next());
+         }
+         //用for循环和get()方法：
+         for (int i = 0; i &lt; l.size(); i++) {
+             System.out.println(&quot;for：Element in list is :   &quot; + l.get(i));
+         }
+     }
+ }</code></pre><p>LinkedList</p>
+<pre><code>package Test;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+public class TestLinkedList {
+    public static void main(String arg[]) {
+        LinkedList ll = new LinkedList();// 声明LinkedList并实例化
+        // 使用add（）方法添加元素
+         ll.add(&quot;a&quot;);
+         ll.add(&quot;b&quot;);
+         ll.add(&quot;c&quot;);
+         // 使用Iterator迭代器遍历出集合的元素并打印
+         Iterator it = ll.iterator();
+         while (it.hasNext()) {
+             System.out.println(it.next());
+         }
+         System.out.println(&quot;------------------&quot;);
+         // 向链表头和尾分别添加x和z
+         ll.addFirst(&quot;z&quot;);
+         ll.addLast(&quot;x&quot;);
+         // 遍历查看添加后的结果
+         for (Iterator i = ll.iterator(); i.hasNext();) {
+             System.out.println(i.next());
+         }
+     }
+ }</code></pre><p>ArrayList和LinkedList的区别。</p>
+<p>1.ArrayList是实现了基于动态数组的数据结构，LinkedList基于链表的数据结构。<br>2.对于随机访问get和set，ArrayList觉得优于LinkedList，因为LinkedList要移动指针。<br>3.对于新增和删除操作add和remove，LinedList比较占优势，因为ArrayList要移动数据。<br>如果熟悉数据结构的同学，就会一下明白，ArrayList就是线性表的顺序表示，LinkedList就是线性表的链表表示。</p>
+<hr>
+<h4 id="五、-Set接口，代表无序，不可重复的集合"><a href="#五、-Set接口，代表无序，不可重复的集合" class="headerlink" title="五、 Set接口，代表无序，不可重复的集合"></a>五、 Set接口，代表无序，不可重复的集合</h4><p>Set具有与Collection完全一样的接口，因此没有任何额外的功能，不像前面有两个不同的List。实际上Set就是Collection,只 是行为不同。（这是继承与多态思想的典型应用：表现不同的行为。）Set不保存重复的元素（至于如何判断元素相同则较为负责）<br>Set : 存入Set的每个元素都必须是唯一的，因为Set不保存重复元素。加入Set的元素必须定义equals()方法以确保对象的唯一性。Set与Collection有完全一样的接口。Set接口不保证维护元素的次序。</p>
+<ol>
+<li>HashSet<br>  为快速查找设计的Set。存入HashSet的对象必须定义hashCode()。</li>
+<li>TreeSet<br>  保存次序的Set, 底层为树结构。使用它可以从Set中提取有序的序列。</li>
+<li>LinkedHashSet<br>  具有HashSet的查询速度，且内部使用链表维护元素的顺序（插入的次序）。于是在使用迭代器遍历Set时，结果会按元素插入的次序显示。</li>
+</ol>
+<p>用法：</p>
+<pre><code>Set set=new HashSet();
+    String s1=new String(&quot;hello&quot;);
+    String s2=s1;
+    String s3=new String(&quot;world&quot;);
+    set.add(s1);
+    set.add(s2);
+    set.add(s3);
+    System.out.println(set.size());//打印集合中对象的数目 为 2。
+    Set 的 add()方法是如何判断对象是否已经存放在集合中？
+     boolean isExists=false;
+     Iterator iterator=set.iterator();
+     while(it.hasNext())  {
+         String oldStr=it.next();
+         if(newStr.equals(oldStr)){
+            isExists=true;
+         }
+     }</code></pre><hr>
+<h4 id="六、-Map接口：映射"><a href="#六、-Map接口：映射" class="headerlink" title="六、 Map接口：映射"></a>六、 Map接口：映射</h4><p>Map没有继承Collection接口， Map 提供 key 到 value 的映射，你可以通过“键”查找“值”。一个 Map 中不能包含相同的 key ，每个 key 只能映射一个 value 。 Map 接口提供3 种集合的视图， Map 的内容可以被当作一组 key 集合，一组 value 集合，或者一组 key-value 映射。<br>方法 put(Object key, Object value) 添加一个“值” ( 想要得东西 ) 和与“值”相关联的“键” (key) ( 使用它来查找 ) 。方法get(Object key) 返回与给定“键”相关联的“值”。可以用 containsKey() 和 containsValue() 测试 Map 中是否包含某个“键”或“值”。 标准的 Java 类库中包含了几种不同的 Map ： HashMap, TreeMap, LinkedHashMap, WeakHashMap, IdentityHashMap 。它们都有同样的基本接口 Map ，但是行为、效率、排序策略、保存对象的生命周期和判定“键”等价的策略等各不相同。</p>
+<p>Map 同样对每个元素保存一份，但这是基于 “ 键” 的， Map 也有内置的排序，因而不关心元素添加的顺序。如果添加元素的顺序对你很重要，应该使用 LinkedHashSet 或者 LinkedHashMap.</p>
+<p>执行效率是 Map 的一个大问题。看看 get() 要做哪些事，就会明白为什么在 ArrayList 中搜索“键”是相当慢的。而这正是 HashMap 提高速度的地方。 HashMap 使用了特殊的值，称为“散列码” (hash code) ，来取代对键的缓慢搜索。“散列码”是“相对唯一”用以代表对象的int 值，它是通过将该对象的某些信息进行转换而生成的（在下面总结二：需要的注意的地方有更进一步探讨）。所有 Java 对象都能产生散列码，因为 hashCode() 是定义在基类 Object 中的方法 。 HashMap 就是使用对象的 hashCode() 进行快速查询的。此方法能够显著提高性能。</p>
+<ol>
+<li>Hashtable类<br>　　Hashtable继承Map接口，实现一个key-value映射的哈希表。任何非空（non-null）的对象都可作为key或者value。Hashtable是同步的。<br>　　添加数据使用 put(key, value) ，取出数据使用get(key) ，这两个基本操作的时间开销为常数。<br>Hashtable 通过初始化容量 (initial capacity) 和负载因子 (load factor) 两个参数调整性能。通常缺省的 load factor0.75 较好地实现了时间和空间的均衡。增大 load factor 可以节省空间但相应的查找时间将增大，这会影响像get 和 put 这样的操作。<br>使用 Hashtable 的简单示例如下，将 1 ，2 ，3 放到 Hashtable 中，他们的 key 分别是 ”one” ， ”two” ， ”three” ：<br>　　　　 Hashtable numbers =new Hashtable();<br>　　　　 numbers.put(“one”, new Integer(1));<br>　　　　 numbers.put(“two”, new Integer(2));<br>　　　　 numbers.put(“three”, new Integer(3));<br>　　要取出一个数，比如 2 ，用相应的 key ：<br>　　　　 Integer n = (Integer)numbers.get(“two”);<br>　　　　 System.out.println(“two= ”+ n);<br>　 　由于作为 key 的对象将通过计算其散列函数来确定与之对应的 value 的位置，因此任何作为 key 的对象都必须实现 hashCode 方法和 equals 方法。 hashCode 方法和 equals 方法继承自根类 Object ，如果你用自定义的类当作 key 的话，要相当小心，按照散列函数的定义，如果两个对象相同，即 obj1.equals(obj2)=true ，则它们的 hashCode 必须相同，但如果两个对象不同，则它们的 hashCode 不一定不同，如果两个不同对象的 hashCode 相同，这种现象称为冲突，冲突会导致操作哈希表的时间开销增大，所以尽量定义好的 hashCode() 方法，能加快哈希表的操作。<br>　　如果相同的对象有不同的 hashCode ，对哈希表的操作会出现意想不到的结果（期待的 get 方法返回null ），要避免这种问题，只需要牢记一条：要同时复写 equals 方法和 hashCode 方法，而不要只写其中一个。Hashtable 是同步的。</li>
+<li>HashMap类<br>　　HashMap和Hashtable类似，也是基于hash散列表的实现。不 同之处在于 HashMap是非同步的，并且允许null，即null value和null key。，但是将HashMap视为Collection时 （values()方法可返回Collection），其迭代子操作时间开销和HashMap的容量成比例。因此，如果迭代操作的性能相当重要的话，不要 将HashMap的初始化容量设得过高，或者load factor过低。<br>　　LinkedHashMap 类：类似于 HashMap ，但是迭代遍历它时，取得“键值对”的顺序是其插入次序，或者是最近最少使用 (LRU) 的次序。只比 HashMap 慢一点。而在迭代访问时发而更快，因为它使用链表维护内部次序。</li>
+<li>WeakHashMap类 （弱键（ weak key ））<br>　　WeakHashMap是一种改进的HashMap，它是为解决特殊问题设计的，它对key实行“弱引用”，如果一个key不再被外部所引用，那么该key可以被GC回收。</li>
+<li>TreeMap 类<br>基于红黑树数据结构的实现。查看“键”或“键值对”时，它们会被排序 ( 次序由 Comparabel 或 Comparator 决定 ) 。 TreeMap 的特点在于，你得到的结果是经过排序的。 TreeMap 是唯一的带有 subMap() 方法的 Map ，它可以返回一个子树。</li>
+<li>IdentifyHashMap 类<br>使用 == 代替 equals() 对“键”作比较的 hash map 。专为解决特殊问题而设计。<br>用法：<br>1 添加，删除操作：</li>
+</ol>
+<pre><code>1. Object put(Object key, Object value): 向集合中加入元素
+2. Object remove(Object key):   删除与KEY相关的元素
+3. void putAll(Map t):   将来自特定映像的所有元素添加给该映像
+4. void clear(): 从映像中删除所有映射
+
+2 查询操作：
+Object get(Object key): 获得与关键字key相关的值
+Map集合中的键对象不允许重复，也就说，任意两个键对象通过equals()方法比较的结果都是false.
+但是可以将任意多个键独享映射到同一个值对象上。
+Conllections : 集合实用类
+Conllections提供了供JAVA集合实用的静态方法</code></pre><hr>
+<h4 id="七、-如何选择"><a href="#七、-如何选择" class="headerlink" title="七、 如何选择"></a>七、 如何选择</h4><ol>
+<li>容器类和Array的区别、择取<br>  1)容器类仅能持有对象引用（指向对象的指针），而不是将对象信息copy一份至数列某位置。<br>  2)一旦将对象置入容器内，便损失了该对象的型别信息。</li>
+<li>  1)  在各种Lists中，最好的做法是以ArrayList作为缺省选择。当插入、删除频繁时，使用LinkedList()；<pre><code>Vector总是比ArrayList慢，所以要尽量避免使用。</code></pre>  2) 在各种Sets中，HashSet通常优于HashTree（插入、查找）。只有当需要产生一个经过排序的序列，才用TreeSet。<pre><code>HashTree存在的唯一理由：能够维护其内元素的排序状态。</code></pre>  3) 在各种Maps中,HashMap用于快速查找。<br>  4)  当元素个数固定，用Array，因为Array效率是最高的。<br>结论：最常用的是ArrayList，HashSet，HashMap，Array。而且，我们也会发现一个规律，用TreeXXX都是排序的。<br>注意：<br>1、Collection没有get()方法来取得某个元素。只能通过iterator()遍历元素。<br>2、Set和Collection拥有一模一样的接口。<br>3、List，可以通过get()方法来一次取出一个元素。使用数字来选择一堆对象中的一个，get(0)…。(add/get)<br>4、一般使用ArrayList。用LinkedList构造堆栈stack、队列queue。<br>5、Map用 put(k,v) / get(k)，还可以使用containsKey()/containsValue()来检查其中是否含有某个key/value。<br>  HashMap会利用对象的hashCode来快速找到key。<br>  hashing:<pre><code>哈希码就是将对象的信息经过一些转变形成一个独一无二的int值，这个值存储在一个array中。
+我们都知道所有存储结构中，array查找速度是最快的。所以，可以加速查找。
+发生碰撞时，让array指向多个values。即，数组每个位置上又生成一个梿表。</code></pre>6、Map中元素，可以将key序列、value序列单独抽取出来。<br>使用keySet()抽取key序列，将map中的所有keys生成一个Set。<br>使用values()抽取value序列，将map中的所有values生成一个Collection。</li>
+</ol>
+<p>为什么一个生成Set，一个生成Collection？那是因为，key总是独一无二的，value允许重复。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2016/09/11/Java-Collectio/" data-id="cjzl2vhu5001mk8kb5hf8ck7w"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+        
+
+<article id="post-git-op" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2015/12/25/git-op/">Git 基本命令</a>
+    </h2>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2015/12/25/git-op/" class="article-date">
+  <time datetime="2015-12-25T10:29:00.000Z" itemprop="datePublished">2015-12-25</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/git/">git</a>
+  </div>
+
+      </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <hr>
+<pre><code>git branch                   查看本地分支
+git branch -r                查看远程分支
+git branch -a                查看所有分之</code></pre><hr>
+<pre><code>git branch [新分支名]         创建新分支
+git checkout [新分支名]       切换到新分支
+git push origin [新分支名]    推送新分支到服务器</code></pre><hr>
+<pre><code>git branch -r     # 验证查看是否推送成功
+
+git add &lt;file&gt;    # 将工作文件修改提交到本地暂存区
+
+git add .         # 将所有修改过的工作文件提交暂存区
+
+git status        # 查看本地暂存文件（没有提交的文件）
+
+git commit        # 把文件从暂存区提交到branch
+
+git commit –m     # 带注释
+
+git pull          # 抓取远程仓库所有分支更新并合并到本地</code></pre><hr>
+<pre><code>1、创建分支
+创建分支很简单：git branch &lt;分支名&gt;
+
+2、切换分支
+git checkout &lt;分支名&gt;
+该语句和上一个语句可以和起来用一个语句表示：git checkout -b &lt;分支名&gt;
+
+3、分支合并
+比如，如果要将开发中的分支（develop），合并到稳定分支（master），
+首先切换的master分支：git checkout master。
+然后执行合并操作：git merge develop。
+如果有冲突，会提示你，调用git status查看冲突文件。
+解决冲突，然后调用git add或git rm将解决后的文件暂存。
+所有冲突解决后，git commit 提交更改。
+
+4、分支衍合
+分支衍合和分支合并的差别在于，分支衍合不会保留合并的日志，不留痕迹，而 分支合并则会保留合并的日志。
+要将开发中的分支（develop），衍合到稳定分支（master）。
+首先切换的master分支：git checkout master。
+然后执行衍和操作：git rebase develop。
+如果有冲突，会提示你，调用git status查看冲突文件。
+解决冲突，然后调用git add或git rm将解决后的文件暂存。
+所有冲突解决后，git rebase --continue 提交更改。
+
+5、删除分支
+执行git branch -d &lt;分支名&gt;
+如果该分支没有合并到主分支会报错，可以用以下命令强制删除git branch -D &lt;分支名&gt;</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2015/12/25/git-op/" data-id="cjzl2vhsr000dk8kbqu4q8pe6"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
+  </article>
+  
+
+  
+    <nav class="page-nav">
+      
+      <a class="extend prev" rel="prev" href="/">Prev page</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </nav>
+  
+</section>
+</div>
+
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+  <aside class="sidebar">
+    
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

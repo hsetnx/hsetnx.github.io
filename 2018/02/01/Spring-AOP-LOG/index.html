@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  
+    <meta name="keywords" content="java | spring | 分布式 | 微服务 | 高并发">
+  
+  
+    <meta name="description" content="AOP是Spring的核心思想,但是我们自己编程却很少用到这个思想，其实这个听起来很抽象的概念，如果弄清楚了，用起来还是很方便的。">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    Spring AOP-LOG |
+    
+    悲欢自饮_</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  
+
+<article id="post-Spring-AOP-LOG" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring AOP-LOG
+    </h1>
+  
+  
+
+
+
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2018/02/01/Spring-AOP-LOG/" class="article-date">
+  <time datetime="2018-02-01T11:25:40.000Z" itemprop="datePublished">2018-02-01</time>
+</a>
+        
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+
+      </div>
+    
+
+    
+      
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+        <h2 id="Spring-AOP-LOG"><a href="#Spring-AOP-LOG" class="headerlink" title="Spring AOP-LOG"></a>Spring AOP-LOG</h2><p>AOP是Spring的核心思想,但是我们自己编程却很少用到这个思想，其实这个听起来很抽象的概念，如果弄清楚了，用起来还是很方便的。<br>下面写个例子,可以体会下AOP做日志打印的便利之处。</p>
+<pre><code>@Aspect
+@Component
+@Order(-5)
+public class LogAspect {
+
+    private static Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    private static final String POINT_CUT = &quot;execution(public * com..*.controller.*.*(..)) &quot; +
+            &quot;&amp;&amp; @annotation(org.springframework.web.bind.annotation.RequestMapping))&quot;;
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-11-24 17:56
+     * Description:  日志打印切点
+     */
+    @Pointcut(POINT_CUT)
+    public void webLog() {
+
+    }
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-12-18 9:37
+     * Description:  入参
+     */
+    @Before(value = &quot;webLog()&quot;)
+    public void doBefore(JoinPoint joinPoint) {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            Enumeration&lt;String&gt; paramNames = request.getParameterNames();
+            Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+            while (paramNames.hasMoreElements()) {
+                String paraName = paramNames.nextElement();
+                map.put(paraName, request.getParameter(paraName));
+            }
+            logger.info(&quot; method={} 入参: param={}&quot;, joinPoint.getSignature().getDeclaringTypeName()
+                    + &quot;.&quot;
+                    + joinPoint.getSignature().getName(), JsonUtil.toJson(map));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Created with Jingyan
+     * Time: 2017-12-18 9:37
+     * Description: 出参
+     */
+    @AfterReturning(value = &quot;webLog()&quot;, returning = &quot;retVal&quot;)
+    public void doAfterReturning(JoinPoint joinPoint, Object retVal) {
+        try {
+            logger.info(&quot; method={} 出参: param={}&quot;, joinPoint.getSignature().getDeclaringTypeName()
+                    + &quot;.&quot;
+                    + joinPoint.getSignature().getName(), JsonUtil.toJson(retVal));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+}</code></pre><p>首先，定义一个切入点，即在 controller 包下并且有 RequestMapping 注解的方法；**<br>接着，对切点进行拦截，实现通知。</p>
+<p>在Spring AOP中支持4中类型的通知：</p>
+<pre><code>1：before advice 在方法执行前执行。
+2：after returning advice 在方法执行后返回一个结果后执行。
+3：after throwing advice 在方法执行过程中抛出异常的时候执行。
+4：around advice 环绕通知，在方法执行前后和抛出异常时执行，相当于综合了以上三种通知。</code></pre><p>这样，一个简单的日志切面就写完了，核心思想就两步，1.定义切点；2.实现通知。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://jingyan.space/2018/02/01/Spring-AOP-LOG/" data-id="cjzl2vhsl0006k8kba3jxua1r"
+         class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+  <nav class="article-nav">
+    
+      <a href="/2018/02/02/distributed-idempotent/" class="article-nav-link">
+        <strong class="article-nav-caption">Newer posts</strong>
+        <div class="article-nav-title">
+          
+            简单的分布式幂等注解的设计与实现
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2017/02/23/Activiti-Spring配置/" class="article-nav-link">
+        <strong class="article-nav-caption">Olde posts</strong>
+        <div class="article-nav-title">Activiti+Spring配置</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 悲欢自饮_</li>
+      <li>Powered by <a href="http://jingyan.space" target="_blank">HSetNx</a></li>
+      <li></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+
+<aside class="sidebar sidebar-specter">
+  
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/default_avatar.png" alt="悲欢自饮_"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">Home</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">Archives</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">Gallery</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">About</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>
